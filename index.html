@@ -21,6 +21,8 @@
 .control-block{margin:10px;border:1px solid var(--line);border-radius:8px;background:rgba(2,13,20,.82);overflow:hidden}.control-body{padding:10px 12px}.btn{height:31px;border:1px solid rgba(134,210,255,.35);border-radius:5px;background:linear-gradient(#132e43,#071b29);color:#f2fbff;font-weight:900;cursor:pointer}.btn:hover{border-color:var(--blue);box-shadow:0 0 14px rgba(32,191,255,.18)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.stack{display:grid;gap:7px}.range{width:100%;accent-color:var(--blue)}.toggle{display:flex;justify-content:space-between;gap:8px;padding:6px 0;font-size:12px;color:#dbeaf2}.toggle input{accent-color:var(--blue)}.scenario{display:grid;gap:6px}.scenario button{height:30px;text-align:left;padding-left:10px;border:1px solid rgba(255,255,255,.13);background:#0b2030;color:#d8ecf5;border-radius:4px}.scenario button.active{border-color:var(--gold);color:#fff;background:rgba(255,214,74,.14)}.pulse-row{display:grid;grid-template-columns:42px 1fr 42px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:12px}.pulse-row b{color:var(--gold)}.pulse-row span{color:var(--muted)}
 .footer{display:grid;grid-template-columns:270px 1fr 390px;align-items:center;border-top:1px solid var(--line);background:rgba(0,8,13,.95);z-index:900}.transport{display:flex;gap:8px;padding:0 14px}.play{width:44px;color:var(--green)}.timeline-wrap{display:grid;gap:5px;padding-right:16px}.timeline-top{display:flex;justify-content:space-between;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:900}.timeline{position:relative;height:18px;border:1px solid rgba(134,210,255,.35);background:linear-gradient(90deg,rgba(32,191,255,.18),rgba(255,214,74,.18),rgba(55,224,122,.18));overflow:hidden}.progress{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,rgba(32,191,255,.70),rgba(255,255,255,.35));box-shadow:0 0 18px rgba(32,191,255,.45)}#timeSlider{position:absolute;inset:0;width:100%;opacity:0;cursor:pointer}.mode-strip{display:grid;grid-template-columns:repeat(4,1fr);height:100%;border-left:1px solid rgba(255,255,255,.12)}.mode{display:grid;place-items:center;text-transform:uppercase;font-size:11px;font-weight:950;color:#b9cdd7;border-right:1px solid rgba(255,255,255,.10);cursor:pointer}.mode.active{color:#fff;background:rgba(32,191,255,.14)}
 .modal{position:absolute;z-index:1400;display:none;width:380px;border:1px solid rgba(134,210,255,.58);border-radius:9px;background:rgba(4,17,27,.98);box-shadow:0 24px 70px #000;color:#eef9ff}.modal.show{display:block}.modal-head{height:42px;display:flex;align-items:center;justify-content:space-between;padding:0 13px;border-bottom:1px solid rgba(255,255,255,.14);font-weight:950;text-transform:uppercase}.modal-close{background:transparent;border:0;color:white;font-size:22px;cursor:pointer}.modal-body{padding:12px;font-size:13px;line-height:1.55}.detail-row{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08);padding:6px 0}.detail-row b{color:#fff}.note{margin-top:9px;color:#b6cbd5;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);padding:8px;border-radius:5px}.mini3d{height:150px;border:1px solid rgba(134,210,255,.30);border-radius:7px;background:radial-gradient(circle at 50% 45%,rgba(32,191,255,.25),transparent 34%),linear-gradient(#071823,#02070b);display:grid;place-items:center;overflow:hidden}.vortex{width:118px;height:118px;border-radius:50%;border:3px solid rgba(32,191,255,.75);box-shadow:0 0 24px rgba(32,191,255,.52), inset 0 0 20px rgba(32,191,255,.25);animation:spin 5s linear infinite;background:conic-gradient(from 0deg,transparent,rgba(32,191,255,.9),transparent,rgba(255,255,255,.55),transparent)}@keyframes spin{to{transform:rotate(360deg)}}
+/* Tab workspace overlays: real full-panel views layered over the map area */
+.workspace{position:absolute;inset:0;z-index:600;display:none;flex-direction:column;background:linear-gradient(160deg,rgba(2,10,17,.97),rgba(4,17,28,.98) 55%,rgba(10,6,22,.97));overflow:hidden}.workspace.show{display:flex}.ws-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,rgba(32,191,255,.10),transparent)}.ws-head h2{margin:0;font-size:18px;letter-spacing:.6px;text-transform:uppercase}.ws-head p{margin:3px 0 0;color:var(--muted);font-size:12px}.ws-body{flex:1;min-height:0;overflow:auto;padding:16px 20px}.ws-grid{display:grid;gap:14px}.ws-cards{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}.ws-card{border:1px solid var(--line);border-radius:9px;background:rgba(1,8,14,.7);padding:14px}.ws-card h4{margin:0 0 10px;font-size:12px;text-transform:uppercase;color:#eaf8ff;letter-spacing:.4px;border-bottom:1px solid var(--line2);padding-bottom:8px}.ws-chart{position:relative;height:280px}.ws-two{grid-template-columns:1fr 1fr}.ws-kpi{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:14px}.kpi{border:1px solid var(--line);border-radius:9px;padding:12px 14px;background:rgba(1,8,14,.7)}.kpi span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800}.kpi b{display:block;margin-top:6px;font-size:24px;color:#fff;font-variant-numeric:tabular-nums}.ws-table{width:100%;border-collapse:collapse;font-size:12px}.ws-table th,.ws-table td{border:1px solid var(--line2);padding:7px 9px;text-align:left}.ws-table th{color:#d9eef7;background:rgba(255,255,255,.03);text-transform:uppercase;font-size:10.5px}.ws-close{height:34px;padding:0 16px}@media(max-width:1320px){.ws-two{grid-template-columns:1fr}}
 @media(max-width:1320px){.main{grid-template-columns:245px 1fr}.right{display:none}.analytics{grid-template-columns:1fr 1fr}.analytics .glass:nth-child(n+3){display:none}.topbar{grid-template-columns:330px 1fr 300px}.telemetry .metric:nth-child(n+4){display:none}.footer{grid-template-columns:220px 1fr}.mode-strip{display:none}}
 
 /* Hybrid color restoration: preserves the graph-heavy WARP look while keeping platform navigation compact. */
@@ -52,7 +54,7 @@
 </header>
 <main class="main">
   <aside class="left"><div class="section-title">Active Storms <span class="badge" id="stormCount">8</span></div><div class="storm-list" id="stormList"></div></aside>
-  <section class="map-wrap"><div id="map" class="map"></div><div class="map-title">NORTH AMERICAN WEATHER ANOMALIES DOMAIN</div><div class="deck"><div class="analytics"><div class="glass"><h3>Intensity Over Time</h3><canvas id="intensityChart" class="chart"></canvas></div><div class="glass"><h3>Pulse Impact</h3><canvas id="pulseChart" class="chart"></canvas></div><div class="glass"><h3>Mission Summary</h3><div class="summary-body" id="missionSummary"></div></div><div class="glass"><h3>Storm Status</h3><table class="status-table" id="statusTable"></table></div></div><div class="thumbs" id="thumbs"></div></div></section>
+  <section class="map-wrap"><div id="map" class="map"></div><div class="map-title">NORTH AMERICAN WEATHER ANOMALIES DOMAIN</div><div class="deck"><div class="analytics"><div class="glass"><h3>Intensity Over Time</h3><canvas id="intensityChart" class="chart"></canvas></div><div class="glass"><h3>Pulse Impact</h3><canvas id="pulseChart" class="chart"></canvas></div><div class="glass"><h3>Mission Summary</h3><div class="summary-body" id="missionSummary"></div></div><div class="glass"><h3>Storm Status</h3><table class="status-table" id="statusTable"></table></div></div><div class="thumbs" id="thumbs"></div></div><div class="workspace" id="workspace"><div class="ws-head"><div><h2 id="wsTitle">Workspace</h2><p id="wsSubtitle"></p></div><button class="btn ws-close" id="wsClose">← Back to Mission Control</button></div><div class="ws-body" id="wsBody"></div></div></section>
   <aside class="right">
     <div class="control-block"><div class="section-title">Simulation Control <span id="speedLabel">1.0x</span></div><div class="control-body stack"><input id="speed" class="range" type="range" min=".2" max="3" step=".1" value="1"><div class="grid2"><button class="btn" id="pauseBtn">Ⅱ Pause</button><button class="btn" id="stepBtn">▶ Step</button></div><button class="btn" id="resetBtn">↻ Reset Run</button></div></div>
     <div class="control-block"><div class="section-title">Layer Manager</div><div class="control-body"><label class="toggle">Satellite Clouds <input id="cloudToggle" type="checkbox" checked></label><label class="toggle">Pulse Fields <input id="pulseToggle" type="checkbox" checked></label><label class="toggle">Storm Tracks <input id="trackToggle" type="checkbox" checked></label><label class="toggle">Forecast Cones <input id="coneToggle" type="checkbox" checked></label><label class="toggle">Lightning <input id="lightningToggle" type="checkbox" checked></label><label class="toggle">Tornado Alley <input id="alleyToggle" type="checkbox" checked></label><label class="toggle">State Borders <input id="stateToggle" type="checkbox" checked></label></div></div>
@@ -88,7 +90,7 @@ L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/Wo
 const cloudPane=map.createPane('clouds');cloudPane.style.zIndex=350;cloudPane.style.pointerEvents='none';
 const cloudSvg='data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520"><filter id="b"><feGaussianBlur stdDeviation="16"/></filter><g filter="url(#b)" fill="white"><ellipse opacity=".28" cx="780" cy="70" rx="330" ry="58"/><ellipse opacity=".22" cx="820" cy="430" rx="210" ry="44"/><ellipse opacity=".20" cx="380" cy="270" rx="180" ry="38"/><ellipse opacity=".18" cx="160" cy="340" rx="240" ry="44"/></g></svg>`);
 layers.cloud.push(L.imageOverlay(cloudSvg,[[5,-130],[62,-50]],{opacity:.50,pane:'clouds'}).addTo(map));
-fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json').then(r=>r.json()).then(g=>{layers.states=L.geoJSON(g,{style:{color:'rgba(255,255,255,.56)',weight:1,fillOpacity:0},onEachFeature:(f,l)=>l.on('click',()=>showState(f.properties.name))}).addTo(map)});
+fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(g=>{layers.states=L.geoJSON(g,{style:{color:'rgba(255,255,255,.56)',weight:1,fillOpacity:0},onEachFeature:(f,l)=>l.on('click',()=>showState(f.properties.name))});if(document.getElementById('stateToggle').checked)layers.states.addTo(map)}).catch(err=>{console.warn('State borders unavailable:',err.message);const t=document.getElementById('stateToggle');if(t){t.checked=false;t.disabled=true;const lbl=t.closest('.toggle');if(lbl)lbl.title='State borders could not be loaded (offline or source unavailable)'}});
 L.marker([57,-102],{icon:L.divIcon({html:'<div class="north-label">CANADA</div>',className:'',iconSize:[120,24]})}).addTo(map);L.marker([39,-98],{icon:L.divIcon({html:'<div class="north-label">UNITED STATES</div>',className:'',iconSize:[180,24]})}).addTo(map);L.marker([23.5,-102],{icon:L.divIcon({html:'<div class="north-label">MEXICO</div>',className:'',iconSize:[120,24]})}).addTo(map);L.marker([9,-66],{icon:L.divIcon({html:'<div class="north-label">VENEZUELA</div>',className:'',iconSize:[150,24]})}).addTo(map);
 [['TX',31,-99],['OK',35.6,-97.5],['KS',38.5,-98],['NE',41.5,-99.7],['SD',44.5,-100],['LA',31,-92],['FL',27.8,-81.7],['GA',32.7,-83.4],['NC',35.5,-79.5],['CA',36.7,-119.7],['CO',39,-105.6],['MN',46.3,-94.3],['MI',44.5,-85],['NY',42.9,-75]].forEach(([c,lat,lng])=>L.marker([lat,lng],{icon:L.divIcon({html:`<div class="state-label ${['TX','OK','KS','NE','SD'].includes(c)?'hot':''}">${c}</div>`,className:'',iconSize:[32,16]})}).addTo(map));
 layers.alley=L.polygon([[49,-104],[49,-94],[31.8,-94],[31.8,-104]],{color:'#ffd64a',weight:2,fillColor:'#ffd64a',fillOpacity:.18}).addTo(map);
@@ -120,19 +122,111 @@ viewerBtn.onclick=()=>showModal('3D Storm Viewer',`<div class="mini3d"><div clas
 scenarioBtn.onclick=()=>showModal('Scenario Manager',`<div class="detail-row"><span>Gulf Track</span><b>Active</b></div><div class="detail-row"><span>Plains Outbreak</span><b>Ready</b></div><div class="detail-row"><span>Coastal Impact</span><b>Ready</b></div><div class="detail-row"><span>Baseline</span><b>Ready</b></div><div class="note">Future build: save, load, clone, compare, and replay named scenarios.</div>`,940,150);
 exportBtn.onclick=()=>showModal('Report Generator',`<div class="detail-row"><span>Format</span><b>HTML / PDF future</b></div><div class="detail-row"><span>Includes</span><b>Map + Charts + Notes</b></div><div class="detail-row"><span>Scenario</span><b>${scenarioName.textContent}</b></div><div class="note">This will produce an executive summary of the current simulation configuration and visual state.</div>`,940,260);
 
-// Compact platform navigation: keep Mission Control visible and use modal workspaces for the hybrid concept build.
+// Platform navigation: each tab opens a real workspace view rendered over the map area.
+// "Mission Ctrl" hides the overlay and returns to the default dashboard.
+let wsCharts=[];
+function destroyWsCharts(){wsCharts.forEach(c=>{try{c.destroy()}catch(e){}});wsCharts=[]}
+function showWorkspace(name){
+  const ws=document.getElementById('workspace');
+  destroyWsCharts();
+  if(!name){ws.classList.remove('show');ws.querySelector('#wsBody').innerHTML='';return}
+  const b=document.getElementById('wsBody');
+  document.getElementById('wsTitle').textContent=name+' Workspace';
+  const subtitles={
+    'GIS':'Geospatial reference — objects, coordinates and coverage of the North American domain.',
+    'Simulation':'Scenario playback state, per-object motion and intensity trends.',
+    'Pulse Lab':'Pulse-source inventory, exposure ranking and per-storm coupling.',
+    'Analytics':'Expanded graphs for intensity, wind, pressure and pulse exposure.',
+    'Scenarios':'Named simulation scenarios — status, contents and quick actions.'
+  };
+  document.getElementById('wsSubtitle').textContent=subtitles[name]||'';
+  b.innerHTML='';
+  ws.classList.add('show');
+  ({'GIS':renderGIS,'Simulation':renderSimulation,'Pulse Lab':renderPulseLab,'Analytics':renderAnalytics,'Scenarios':renderScenarios}[name]||(()=>{}))(b);
+}
+function el(html){const d=document.createElement('div');d.innerHTML=html;return d.firstElementChild}
+function addChart(canvas,config){const c=new Chart(canvas,config);wsCharts.push(c);return c}
+const AXIS={ticks:{color:'#d8eaf2'},grid:{color:'rgba(255,255,255,.10)'}};
+
+function renderGIS(b){
+  const rows=[...storms.map(s=>[s.id,s.type,s.cat,s.lat.toFixed(1),s.lng.toFixed(1),s.heading,s.wind+' mph']),
+    ...pulses.map(p=>[p.id,'Pulse',p.power,p.lat.toFixed(1),p.lng.toFixed(1),'—',p.impact+'% impact'])];
+  b.appendChild(el(`<div class="ws-kpi">
+    <div class="kpi"><span>Tracked Objects</span><b>${storms.length+pulses.length}</b></div>
+    <div class="kpi"><span>Storms</span><b>${storms.length}</b></div>
+    <div class="kpi"><span>Pulse Sources</span><b>${pulses.length}</b></div>
+    <div class="kpi"><span>Domain</span><b style="font-size:15px">6°–61° N · 130°–50° W</b></div></div>`));
+  const card=el(`<div class="ws-card"><h4>Object Registry (click a row to focus on the map)</h4></div>`);
+  const table=el(`<table class="ws-table"><thead><tr><th>ID</th><th>Type</th><th>Class</th><th>Lat</th><th>Lng</th><th>Heading</th><th>Metric</th></tr></thead><tbody></tbody></table>`);
+  const tb=table.querySelector('tbody');
+  rows.forEach(r=>{const tr=document.createElement('tr');tr.style.cursor='pointer';tr.innerHTML=r.map(c=>`<td>${c}</td>`).join('');tr.onclick=()=>{showWorkspace(null);document.querySelector('.nav .tab').click();map.setView([+r[3],+r[4]],5)};tb.appendChild(tr)});
+  card.appendChild(table);b.appendChild(card);
+}
+
+function renderSimulation(b){
+  b.appendChild(el(`<div class="ws-kpi">
+    <div class="kpi"><span>Scenario</span><b style="font-size:16px">${scenarioName.textContent}</b></div>
+    <div class="kpi"><span>Playback</span><b>${timeText(missionTime)} / 06:00</b></div>
+    <div class="kpi"><span>Speed</span><b>${speed.toFixed(1)}x</b></div>
+    <div class="kpi"><span>State</span><b style="font-size:16px">${playing?(paused?'Paused':'Running'):'Stopped'}</b></div></div>`));
+  const grid=el(`<div class="ws-grid ws-two"></div>`);
+  const c1=el(`<div class="ws-card"><h4>Storm Intensity</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  const c2=el(`<div class="ws-card"><h4>Forward Speed (mph)</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  grid.appendChild(c1);grid.appendChild(c2);b.appendChild(grid);
+  addChart(c1.querySelector('canvas'),{type:'bar',data:{labels:storms.map(s=>s.id),datasets:[{label:'Intensity %',data:storms.map(s=>Math.round(s.intensity*100)),backgroundColor:storms.map(s=>s.color)}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:AXIS,y:{...AXIS,min:0,max:100}}}});
+  addChart(c2.querySelector('canvas'),{type:'bar',data:{labels:storms.map(s=>s.id),datasets:[{label:'Speed',data:storms.map(s=>s.speed),backgroundColor:'rgba(55,224,122,.7)',borderColor:'#37e07a',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:AXIS,y:{...AXIS,min:0}}}});
+}
+
+function renderPulseLab(b){
+  const ranked=[...pulses].sort((a,p)=>p.impact-a.impact);
+  b.appendChild(el(`<div class="ws-kpi">
+    <div class="kpi"><span>Pulse Sources</span><b>${pulses.length}</b></div>
+    <div class="kpi"><span>Peak Impact</span><b>${Math.max(...pulses.map(p=>p.impact))}%</b></div>
+    <div class="kpi"><span>Avg Impact</span><b>${Math.round(pulses.reduce((a,p)=>a+p.impact,0)/pulses.length)}%</b></div>
+    <div class="kpi"><span>High-power</span><b>${pulses.filter(p=>p.power==='High').length}</b></div></div>`));
+  const grid=el(`<div class="ws-grid ws-two"></div>`);
+  const c1=el(`<div class="ws-card"><h4>Impact by Source</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  const c2=el(`<div class="ws-card"><h4>Exposure Ranking</h4></div>`);
+  const table=el(`<table class="ws-table"><thead><tr><th>Rank</th><th>Pulse</th><th>Power</th><th>Impact</th></tr></thead><tbody></tbody></table>`);
+  ranked.forEach((p,i)=>table.querySelector('tbody').appendChild(el(`<tr><td>${i+1}</td><td><b>${p.id}</b></td><td>${p.power}</td><td>${p.impact}%</td></tr>`)));
+  c2.appendChild(table);grid.appendChild(c1);grid.appendChild(c2);b.appendChild(grid);
+  addChart(c1.querySelector('canvas'),{type:'bar',data:{labels:pulses.map(p=>p.id),datasets:[{data:pulses.map(p=>p.impact),backgroundColor:'rgba(255,214,74,.72)',borderColor:'#ffd64a',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:AXIS,y:{...AXIS,min:0,max:100}}}});
+}
+
+function renderAnalytics(b){
+  const grid=el(`<div class="ws-grid ws-two"></div>`);
+  const c1=el(`<div class="ws-card"><h4>Wind Speed (mph)</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  const c2=el(`<div class="ws-card"><h4>Pulse Exposure (%)</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  const c3=el(`<div class="ws-card"><h4>Wind vs Pulse Exposure</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  const c4=el(`<div class="ws-card"><h4>Hurricane Pressure (mb)</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  [c1,c2,c3,c4].forEach(c=>grid.appendChild(c));b.appendChild(grid);
+  addChart(c1.querySelector('canvas'),{type:'bar',data:{labels:storms.map(s=>s.id),datasets:[{data:storms.map(s=>s.wind),backgroundColor:storms.map(s=>s.color)}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:AXIS,y:{...AXIS,min:0}}}});
+  addChart(c2.querySelector('canvas'),{type:'bar',data:{labels:storms.map(s=>s.id),datasets:[{data:storms.map(s=>Math.round(s.pulse)),backgroundColor:'rgba(166,108,255,.7)',borderColor:'#a66cff',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:AXIS,y:{...AXIS,min:0,max:100}}}});
+  addChart(c3.querySelector('canvas'),{type:'scatter',data:{datasets:[{label:'Storms',data:storms.map(s=>({x:s.wind,y:Math.round(s.pulse)})),backgroundColor:storms.map(s=>s.color),pointRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{...AXIS,title:{display:true,text:'Wind (mph)',color:'#d8eaf2'}},y:{...AXIS,min:0,max:100,title:{display:true,text:'Pulse %',color:'#d8eaf2'}}}}});
+  const hur=storms.filter(s=>s.pressure);
+  addChart(c4.querySelector('canvas'),{type:'bar',data:{labels:hur.map(s=>s.id),datasets:[{data:hur.map(s=>s.pressure),backgroundColor:'rgba(32,191,255,.7)',borderColor:'#20bfff',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:AXIS,y:{...AXIS,min:900}}}});
+}
+
+function renderScenarios(b){
+  const list=[...scenarioButtons.querySelectorAll('button')].map(x=>x.textContent.trim());
+  const active=scenarioName.textContent.trim();
+  b.appendChild(el(`<div class="ws-kpi">
+    <div class="kpi"><span>Scenarios</span><b>${list.length}</b></div>
+    <div class="kpi"><span>Active</span><b style="font-size:16px">${active}</b></div>
+    <div class="kpi"><span>Storms Captured</span><b>${storms.length}</b></div>
+    <div class="kpi"><span>Pulses Captured</span><b>${pulses.length}</b></div></div>`));
+  const grid=el(`<div class="ws-grid ws-cards"></div>`);
+  list.forEach(name=>{const card=el(`<div class="ws-card"><h4>${name}</h4><p style="color:var(--muted);font-size:12px;margin:0 0 12px">${name===active?'Currently active scenario.':'Saved scenario, ready to load.'}</p></div>`);const btn=el(`<button class="btn" style="width:100%">${name===active?'Active':'Load Scenario'}</button>`);btn.onclick=()=>{const target=[...scenarioButtons.querySelectorAll('button')].find(x=>x.textContent.trim()===name);if(target)target.click();showWorkspace('Scenarios')};card.appendChild(btn);grid.appendChild(card)});
+  b.appendChild(grid);
+}
+
+document.getElementById('wsClose').onclick=()=>document.querySelector('.nav .tab').click();
 document.querySelectorAll('.nav .tab').forEach(tab=>tab.addEventListener('click',()=>{
   document.querySelectorAll('.nav .tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active');
   const name=tab.textContent.trim();
-  if(name==='Mission Ctrl'){document.getElementById('modal').classList.remove('open');return;}
-  const copy={
-    'GIS':'Full-map GIS workspace with satellite, radar, wind, borders, storm tracks and pulse overlays.',
-    'Simulation':'Scenario playback workspace for storm motion, intensity trends and hypothetical pulse-field visualization.',
-    'Pulse Lab':'Research workspace for pulse-source placement, radius, exposure and scenario comparison.',
-    'Analytics':'Expanded graph workspace for intensity, wind, pressure, exposure and trajectory comparisons.',
-    'Scenarios':'Save, duplicate and compare named simulation scenarios while keeping observed and hypothetical layers separate.'
-  }[name]||'WARP workspace';
-  showModal(name+' Workspace',`<div class="note">${copy}</div><div class="detail-row"><span>Build mode</span><b>Hybrid concept</b></div><div class="detail-row"><span>Visual standard</span><b>Graph-heavy / high-color</b></div>`,520,130);
+  document.getElementById('modal').classList.remove('show');
+  if(name==='Mission Ctrl'){showWorkspace(null);setTimeout(()=>map.invalidateSize(),60);return;}
+  showWorkspace(name);
 }));
 
 setInterval(()=>{const d=new Date(Date.UTC(2025,4,20,14,35,22+Math.floor(performance.now()/1000)));simClock.textContent=d.toISOString().replace('T',' ').slice(11,19)+' UTC'},1000);
