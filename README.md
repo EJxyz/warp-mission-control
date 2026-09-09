@@ -1,6 +1,10 @@
 # WARP Mission Control
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-20bfff?logo=github)](https://ejxyz.github.io/warp-mission-control/)
+
 **Weather Anomalies Research Platform — Hybrid Color Build**
+
+🔗 **Live demo:** https://ejxyz.github.io/warp-mission-control/
 
 A single-file, browser-based mission-control dashboard concept for visualizing simulated
 weather anomalies (hurricanes, tornadoes) and hypothetical "pulse" energy sources across
