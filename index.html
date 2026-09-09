@@ -49,7 +49,7 @@
 <div id="app" class="app">
 <header class="topbar">
   <div class="brand"><div class="mark"></div><div><h1>WARP Mission Control</h1><small>Weather Anomalies Research Platform · Hybrid Color Build</small></div></div>
-  <nav class="nav"><div class="tab active">Mission Ctrl</div><div class="tab">GIS</div><div class="tab">Simulation</div><div class="tab">Pulse Lab</div><div class="tab">Analytics</div><div class="tab">Scenarios</div></nav>
+  <nav class="nav" aria-label="Primary views"><div class="tab active">Mission Ctrl</div><div class="tab">GIS</div><div class="tab">Simulation</div><div class="tab">Pulse Lab</div><div class="tab">Analytics</div><div class="tab">Scenarios</div></nav>
   <div class="telemetry"><div class="metric"><span>Simulation Time</span><b id="simClock">14:35:22 UTC</b></div><div class="metric"><span>Scenario</span><b class="gold" id="scenarioName">Gulf Track</b></div><div class="metric"><span>System</span><b class="green">Online</b></div><div class="metric"><span>Mode</span><b>Concept</b></div></div>
 </header>
 <main class="main">
@@ -61,7 +61,7 @@
     <div class="control-block"><div class="section-title">Scenario Manager</div><div class="control-body scenario" id="scenarioButtons"><button class="active">Gulf Track</button><button>Plains Outbreak</button><button>Coastal Impact</button><button>Baseline</button></div></div>
     <div class="control-block"><div class="section-title">Pulse Manager</div><div class="control-body" id="pulseManager"></div></div>
   </aside>
-  <div class="modal" id="modal"><div class="modal-head"><span id="modalTitle">Details</span><button class="modal-close" id="modalClose">×</button></div><div class="modal-body" id="modalBody"></div></div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true"><div class="modal-head"><span id="modalTitle">Details</span><button class="modal-close" id="modalClose" aria-label="Close dialog">×</button></div><div class="modal-body" id="modalBody"></div></div>
 </main>
 <footer class="footer">
   <div class="transport"><button class="btn" id="backBtn">≪</button><button class="btn" id="playBtn">▶</button><button class="btn" id="fwdBtn">≫</button></div>
@@ -96,11 +96,21 @@ L.marker([57,-102],{icon:L.divIcon({html:'<div class="north-label">CANADA</div>'
 layers.alley=L.polygon([[49,-104],[49,-94],[31.8,-94],[31.8,-104]],{color:'#ffd64a',weight:2,fillColor:'#ffd64a',fillOpacity:.18}).addTo(map);
 function makeStormIcon(s){return L.divIcon({html:`<div class="storm-marker" style="color:${s.color}">${s.type==='Hurricane'?hurricaneSvg:tornadoSvg}</div><div class="marker-tag">${s.id}</div>`,className:'',iconSize:[72,46]})}
 function makePulseIcon(p){return L.divIcon({html:`<div class="pulse-marker"></div><div class="pulse-id">${p.id}</div>`,className:'',iconSize:[72,46]})}
-function showModal(title,html,x=520,y=120){const m=document.getElementById('modal');document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=html;m.style.left=x+'px';m.style.top=y+'px';m.classList.add('show')}document.getElementById('modalClose').onclick=()=>document.getElementById('modal').classList.remove('show');
+let modalReturnFocus=null;
+function closeModal(){const m=document.getElementById('modal');m.classList.remove('show');m.setAttribute('aria-hidden','true');if(modalReturnFocus&&modalReturnFocus.focus){modalReturnFocus.focus()}modalReturnFocus=null}
+function showModal(title,html,x=520,y=120){const m=document.getElementById('modal');modalReturnFocus=document.activeElement;document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=html;m.style.left=x+'px';m.style.top=y+'px';m.classList.add('show');m.setAttribute('aria-hidden','false');document.getElementById('modalClose').focus()}
+document.getElementById('modalClose').onclick=closeModal;
+// Escape closes the modal; basic focus trap keeps Tab within the dialog while open.
+document.addEventListener('keydown',e=>{const m=document.getElementById('modal');if(!m.classList.contains('show'))return;if(e.key==='Escape'){e.preventDefault();closeModal();return}if(e.key==='Tab'){const f=m.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');if(!f.length)return;const first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 function stormDetails(s){showModal(`${s.id} ${s.type} Inspector`,`<div class="detail-row"><span>Category / EF</span><b>${s.cat}</b></div><div class="detail-row"><span>Wind</span><b>${s.wind} mph</b></div><div class="detail-row"><span>Pressure</span><b>${s.pressure||'-'} mb</b></div><div class="detail-row"><span>Heading</span><b>${s.heading}</b></div><div class="detail-row"><span>Forward Speed</span><b>${s.speed} mph</b></div><div class="detail-row"><span>Pulse Exposure</span><b>${Math.round(s.pulse)}%</b></div><div class="note">Storm inspector workspace placeholder: track history, forecast path, intensity trace, affected states, and scenario notes will appear here.</div>`,300,118)}
 function pulseDetails(p){showModal(`${p.id} Pulse Control`,`<div class="detail-row"><span>Impact</span><b>${p.impact}%</b></div><div class="detail-row"><span>Power</span><b>${p.power}</b></div><div class="detail-row"><span>Latitude</span><b>${p.lat.toFixed(2)}</b></div><div class="detail-row"><span>Longitude</span><b>${p.lng.toFixed(2)}</b></div><div class="note">Simulation-only object: configurable radius, visualization style, and scenario assignment.</div>`,900,130)}
 function showState(name){showModal(`${name} State Watch`,`<div class="detail-row"><span>Risk Type</span><b>Simulation Watch</b></div><div class="detail-row"><span>Layer</span><b>Storm + Pulse Exposure</b></div><div class="detail-row"><span>Status</span><b>Monitored</b></div><div class="note">Future version: click a state to show affected storms, projected arrival, watch/warning state, and scenario notes.</div>`,560,150)}
-function drawObjects(){layers.markers.forEach(l=>map.removeLayer(l));layers.tracks.forEach(l=>map.removeLayer(l));layers.cones.forEach(l=>map.removeLayer(l));layers.pulses.forEach(l=>map.removeLayer(l));layers={...layers,markers:[],tracks:[],cones:[],pulses:[],lightning:layers.lightning,cloud:layers.cloud};storms.forEach(s=>{layers.tracks.push(L.polyline(s.track,{color:'#a8b8c2',weight:2,dashArray:'6 8',opacity:.7}).addTo(map));layers.tracks.push(L.polyline([[s.lat,s.lng],...s.proj],{color:s.type==='Hurricane'?'#20bfff':'#a66cff',weight:3,dashArray:s.type==='Hurricane'?'8 8':'5 7',opacity:.95}).addTo(map));const conePts=[[s.lat,s.lng],...s.proj.map((p,i)=>[p[0]+(i+1)*.75,p[1]+(i+1)*.35]),...s.proj.slice().reverse().map((p,i)=>[p[0]-(s.proj.length-i)*.75,p[1]-(s.proj.length-i)*.35])];layers.cones.push(L.polygon(conePts,{color:s.color,weight:1,fillColor:s.color,fillOpacity:.10,opacity:.35}).addTo(map));const m=L.marker([s.lat,s.lng],{icon:makeStormIcon(s),draggable:true}).on('click',()=>{selected=s.id;renderStormList();stormDetails(s)}).addTo(map);layers.markers.push(m)});pulses.forEach(p=>{layers.pulses.push(L.circle([p.lat,p.lng],{radius:180000,color:'#ffd64a',weight:2,fillColor:'#ffd64a',fillOpacity:.11}).addTo(map));layers.pulses.push(L.marker([p.lat,p.lng],{icon:makePulseIcon(p),draggable:true}).on('click',()=>pulseDetails(p)).addTo(map))});}
+function coneFor(s){return [[s.lat,s.lng],...s.proj.map((p,i)=>[p[0]+(i+1)*.75,p[1]+(i+1)*.35]),...s.proj.slice().reverse().map((p,i)=>[p[0]-(s.proj.length-i)*.75,p[1]-(s.proj.length-i)*.35])]}
+// Keep dependent map layers in sync when a storm marker is dragged/moved.
+function syncStorm(s){s._lead&&s._lead.setLatLngs([[s.lat,s.lng],...s.proj]);s._cone&&s._cone.setLatLngs(coneFor(s));s._marker&&s._marker.setLatLng([s.lat,s.lng]);renderStormList();updateSummary()}
+// Keep the exposure circle in sync when a pulse marker is dragged/moved.
+function syncPulse(p){p._circle&&p._circle.setLatLng([p.lat,p.lng]);p._marker&&p._marker.setLatLng([p.lat,p.lng])}
+function drawObjects(){layers.markers.forEach(l=>map.removeLayer(l));layers.tracks.forEach(l=>map.removeLayer(l));layers.cones.forEach(l=>map.removeLayer(l));layers.pulses.forEach(l=>map.removeLayer(l));layers={...layers,markers:[],tracks:[],cones:[],pulses:[],lightning:layers.lightning,cloud:layers.cloud};storms.forEach(s=>{layers.tracks.push(L.polyline(s.track,{color:'#a8b8c2',weight:2,dashArray:'6 8',opacity:.7}).addTo(map));s._lead=L.polyline([[s.lat,s.lng],...s.proj],{color:s.type==='Hurricane'?'#20bfff':'#a66cff',weight:3,dashArray:s.type==='Hurricane'?'8 8':'5 7',opacity:.95}).addTo(map);layers.tracks.push(s._lead);s._cone=L.polygon(coneFor(s),{color:s.color,weight:1,fillColor:s.color,fillOpacity:.10,opacity:.35}).addTo(map);layers.cones.push(s._cone);const m=L.marker([s.lat,s.lng],{icon:makeStormIcon(s),draggable:true}).on('click',()=>{selected=s.id;renderStormList();stormDetails(s)}).on('drag',e=>{const ll=e.target.getLatLng();s.lat=+ll.lat.toFixed(3);s.lng=+ll.lng.toFixed(3);syncStorm(s)}).on('dragend',()=>{selected=s.id;syncStorm(s)}).addTo(map);s._marker=m;layers.markers.push(m)});pulses.forEach(p=>{p._circle=L.circle([p.lat,p.lng],{radius:180000,color:'#ffd64a',weight:2,fillColor:'#ffd64a',fillOpacity:.11}).addTo(map);layers.pulses.push(p._circle);const pm=L.marker([p.lat,p.lng],{icon:makePulseIcon(p),draggable:true}).on('click',()=>pulseDetails(p)).on('drag',e=>{const ll=e.target.getLatLng();p.lat=+ll.lat.toFixed(3);p.lng=+ll.lng.toFixed(3);syncPulse(p)}).addTo(map);p._marker=pm;layers.pulses.push(pm)});}
 drawObjects();
 function renderStormList(){const box=document.getElementById('stormList');box.innerHTML='';document.getElementById('stormCount').textContent=storms.length;storms.forEach(s=>{const div=document.createElement('div');div.className='storm-card '+(selected===s.id?'active':'');div.style.setProperty('--accent',s.color);div.innerHTML=`<div class="storm-head"><div class="storm-svg" style="color:${s.color}">${s.type==='Hurricane'?hurricaneSvg:tornadoSvg}</div><div><div class="storm-id">${s.id}</div><div class="storm-type">${s.type}</div></div><div class="storm-cat">${s.cat}</div></div><div class="storm-detail"><span>Wind <b>${s.wind}</b></span><span>Pulse <b>${Math.round(s.pulse)}%</b></span><span>Heading <b>${s.heading}</b></span><span>Speed <b>${s.speed}</b></span></div><div class="bar"><i style="--v:${Math.round(s.intensity*100)}%;background:linear-gradient(90deg,${s.color},var(--green))"></i></div>`;div.onclick=()=>{selected=s.id;map.setView([s.lat,s.lng],5);renderStormList();stormDetails(s)};box.appendChild(div)})}
 renderStormList();
@@ -221,13 +231,38 @@ function renderScenarios(b){
 }
 
 document.getElementById('wsClose').onclick=()=>document.querySelector('.nav .tab').click();
-document.querySelectorAll('.nav .tab').forEach(tab=>tab.addEventListener('click',()=>{
-  document.querySelectorAll('.nav .tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active');
+const navTabs=[...document.querySelectorAll('.nav .tab')];
+function activateTab(tab){
+  navTabs.forEach(t=>{t.classList.remove('active');t.setAttribute('aria-selected','false');t.setAttribute('tabindex','-1')});
+  tab.classList.add('active');tab.setAttribute('aria-selected','true');tab.setAttribute('tabindex','0');
   const name=tab.textContent.trim();
-  document.getElementById('modal').classList.remove('show');
+  if(document.getElementById('modal').classList.contains('show'))closeModal();
   if(name==='Mission Ctrl'){showWorkspace(null);setTimeout(()=>map.invalidateSize(),60);return;}
   showWorkspace(name);
-}));
+}
+// Nav tabs as an accessible tablist: roles, roving tabindex, arrow-key navigation, Enter/Space activation.
+navTabs.forEach((tab,i)=>{
+  tab.setAttribute('role','tab');
+  tab.setAttribute('aria-selected',tab.classList.contains('active')?'true':'false');
+  tab.setAttribute('tabindex',tab.classList.contains('active')?'0':'-1');
+  tab.addEventListener('click',()=>activateTab(tab));
+  tab.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();activateTab(tab);return}
+    let ni=null;
+    if(e.key==='ArrowRight')ni=(i+1)%navTabs.length;
+    else if(e.key==='ArrowLeft')ni=(i-1+navTabs.length)%navTabs.length;
+    else if(e.key==='Home')ni=0;
+    else if(e.key==='End')ni=navTabs.length-1;
+    if(ni!==null){e.preventDefault();navTabs[ni].focus();navTabs[ni].setAttribute('tabindex','0');tab.setAttribute('tabindex','-1')}
+  });
+});
+document.querySelector('.nav').setAttribute('role','tablist');
+// Footer mode buttons: expose as buttons and support keyboard activation.
+document.querySelectorAll('.mode-strip .mode').forEach(mode=>{
+  mode.setAttribute('role','button');
+  mode.setAttribute('tabindex','0');
+  mode.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();mode.click()}});
+});
 
 setInterval(()=>{const d=new Date(Date.UTC(2025,4,20,14,35,22+Math.floor(performance.now()/1000)));simClock.textContent=d.toISOString().replace('T',' ').slice(11,19)+' UTC'},1000);
 </script>
