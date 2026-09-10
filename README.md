@@ -6,7 +6,7 @@
 
 🔗 **Live demo:** https://ejxyz.github.io/warp-mission-control/
 
-A single-file, browser-based mission-control dashboard concept for visualizing simulated
+A browser-based mission-control dashboard concept for visualizing simulated
 weather anomalies (hurricanes, tornadoes) and hypothetical "pulse" energy sources across
 North America.
 
@@ -26,23 +26,38 @@ North America.
 
 ## Running it
 
-It's a single self-contained HTML file. Just open it in a modern browser:
+The app is built from **ES modules**, so it must be served over HTTP — opening
+`index.html` directly via `file://` will not work (module requests are blocked by CORS).
 
 ```bash
-# option 1: open directly
-open index.html          # macOS
-xdg-open index.html      # Linux
-
-# option 2: serve locally (recommended, avoids any file:// restrictions)
+# serve locally, then visit http://localhost:8000
 python3 -m http.server 8000
-# then visit http://localhost:8000
 ```
 
 An internet connection is required — the map tiles, US-state borders GeoJSON, and the
 Leaflet / Chart.js libraries are loaded from CDNs at runtime.
 
+## Project structure
+
+```
+index.html      # markup + CDN <script>/<link> tags, loads js/main.js as a module
+styles.css      # all styles
+js/
+  main.js       # entry point — initializes modules in dependency order
+  data.js       # static concept data (storms, pulses) + SVG icons
+  state.js      # shared mutable runtime state (sim flags, layers, refs)
+  modal.js      # accessible modal dialog (focus trap, Escape, ARIA)
+  details.js    # storm / pulse / state detail modals
+  charts.js     # deck charts (intensity, pulse impact) + shared axis config
+  panels.js     # storm list, mission summary, pulse manager, imagery thumbs
+  map.js        # Leaflet map, markers, tracks, cones, lightning, layer toggles
+  timeline.js   # playback clock, animation loop, transport controls
+  workspaces.js # full-panel tab workspaces (GIS / Simulation / Pulse Lab / ...)
+  nav.js        # nav tablist, footer mode strip, scenario buttons
+```
+
 ## Tech
 
 - [Leaflet 1.9.4](https://leafletjs.com/) — mapping
 - [Chart.js 4.4.1](https://www.chartjs.org/) — charts
-- Vanilla HTML/CSS/JS — no build step
+- Vanilla HTML/CSS/JS ES modules — no build step
