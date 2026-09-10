@@ -1,9 +1,9 @@
 // Playback timeline: clock formatting, progress readout, animation loop,
 // and transport / simulation-control button handlers.
 
-import { storms } from './data.js';
-import { sim, refs } from './state.js';
+import { sim, refs, appData } from './state.js';
 import { renderStormList, updateSummary } from './panels.js';
+import { isReal } from './model.js';
 
 export function timeText(s) {
   const m = Math.floor(s / 60), sec = Math.floor(s % 60);
@@ -19,16 +19,24 @@ export function updateTimeline() {
 function animate() {
   if (sim.playing && !sim.paused) {
     sim.missionTime = (sim.missionTime + .18 * sim.speed) % 360;
+    const storms = appData.storms;
+    // Only evolve SIMULATED storms — we never mutate real observed/forecast data.
     storms.forEach((s, i) => {
-      s.pulse = Math.min(99, s.pulse + .006 * sim.speed);
-      s.intensity = Math.max(.08, s.intensity - .000035 * sim.speed * (i + 1));
+      if (isReal(s.provenance)) return;
+      if (s.pulse !== undefined) s.pulse = Math.min(99, s.pulse + .006 * sim.speed);
+      if (s.intensity !== undefined) s.intensity = Math.max(.08, s.intensity - .000035 * sim.speed * (i + 1));
     });
+    // Advance the intensity chart, matching each dataset to its storm by id/label.
     const chart = refs.intensityChart;
-    chart.data.datasets.forEach((d, i) => {
-      d.data.push(Math.max(.05, storms[i].intensity + Math.sin(performance.now() / 900 + i) * .016));
-      d.data.shift();
-    });
-    chart.update('none');
+    if (chart) {
+      chart.data.datasets.forEach((d, i) => {
+        const s = storms.find(x => x.id === d.label);
+        const base = s && s.intensity !== undefined ? s.intensity : (d.data[d.data.length - 1] || .05);
+        d.data.push(Math.max(.05, base + Math.sin(performance.now() / 900 + i) * .016));
+        d.data.shift();
+      });
+      chart.update('none');
+    }
     renderStormList();
     updateSummary();
     updateTimeline();
@@ -45,8 +53,8 @@ export function initTimeline() {
   $('pauseBtn').onclick = () => { sim.paused = !sim.paused; $('pauseBtn').textContent = sim.paused ? '▶ Play' : 'Ⅱ Pause'; };
   $('stepBtn').onclick = () => {
     sim.missionTime = Math.min(360, sim.missionTime + 10);
-    storms.forEach(s => s.intensity = Math.max(.08, s.intensity - .01));
-    updateTimeline(); renderStormList(); updateSummary(); refs.intensityChart.update();
+    appData.storms.forEach(s => { if (!isReal(s.provenance) && s.intensity !== undefined) s.intensity = Math.max(.08, s.intensity - .01); });
+    updateTimeline(); renderStormList(); updateSummary(); if (refs.intensityChart) refs.intensityChart.update();
   };
   $('resetBtn').onclick = () => location.reload();
   $('speed').oninput = e => { sim.speed = +e.target.value; $('speedLabel').textContent = sim.speed.toFixed(1) + 'x'; };

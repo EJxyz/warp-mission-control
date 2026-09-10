@@ -1,26 +1,44 @@
 // Detail modals for storms, pulses and states (opened from list, markers, managers).
 
 import { showModal } from './modal.js';
+import { PROVENANCE_META, isReal } from './model.js';
+
+const dash = (v, suffix = '') => (v === undefined || v === null || v === '') ? '—' : v + suffix;
+
+// A prominent provenance banner so the viewer always knows if data is real.
+function provBanner(entity) {
+  const meta = PROVENANCE_META[entity.provenance];
+  if (!meta) return '';
+  const real = isReal(entity.provenance);
+  return `<div class="prov-banner" style="--pc:${meta.color}">${meta.badge} · ${meta.label}${real ? '' : ' — not real data'}</div>`;
+}
 
 export function stormDetails(s) {
-  showModal(`${s.id} ${s.type} Inspector`,
-    `<div class="detail-row"><span>Category / EF</span><b>${s.cat}</b></div>` +
-    `<div class="detail-row"><span>Wind</span><b>${s.wind} mph</b></div>` +
-    `<div class="detail-row"><span>Pressure</span><b>${s.pressure || '-'} mb</b></div>` +
-    `<div class="detail-row"><span>Heading</span><b>${s.heading}</b></div>` +
-    `<div class="detail-row"><span>Forward Speed</span><b>${s.speed} mph</b></div>` +
-    `<div class="detail-row"><span>Pulse Exposure</span><b>${Math.round(s.pulse)}%</b></div>` +
-    `<div class="note">Storm inspector workspace placeholder: track history, forecast path, intensity trace, affected states, and scenario notes will appear here.</div>`,
+  const rows = [
+    ['Category / Class', dash(s.cat)],
+    ['Event', dash(s.event)],
+    ['Wind', dash(s.wind, ' mph')],
+    ['Pressure', dash(s.pressure, ' mb')],
+    ['Heading', dash(s.heading)],
+    ['Forward Speed', dash(s.speed, ' mph')],
+    ['Pulse Exposure', s.pulse !== undefined ? Math.round(s.pulse) + '%' : '—'],
+    ['Source', dash(s.source)]
+  ];
+  const areaNote = s.headline ? `<div class="note">${s.headline}${s.areaDesc ? '<br><small>' + s.areaDesc + '</small>' : ''}</div>`
+    : `<div class="note">Storm inspector: track history, forecast path, intensity trace and affected areas will expand here.</div>`;
+  showModal(`${s.id} ${dash(s.type)} Inspector`,
+    provBanner(s) + rows.map(([k, v]) => `<div class="detail-row"><span>${k}</span><b>${v}</b></div>`).join('') + areaNote,
     300, 118);
 }
 
 export function pulseDetails(p) {
-  showModal(`${p.id} Pulse Control`,
-    `<div class="detail-row"><span>Impact</span><b>${p.impact}%</b></div>` +
-    `<div class="detail-row"><span>Power</span><b>${p.power}</b></div>` +
+  showModal(`${p.id} EMP Source`,
+    provBanner(p) +
+    `<div class="detail-row"><span>Impact</span><b>${dash(p.impact, '%')}</b></div>` +
+    `<div class="detail-row"><span>Power</span><b>${dash(p.power)}</b></div>` +
     `<div class="detail-row"><span>Latitude</span><b>${p.lat.toFixed(2)}</b></div>` +
     `<div class="detail-row"><span>Longitude</span><b>${p.lng.toFixed(2)}</b></div>` +
-    `<div class="note">Simulation-only object: configurable radius, visualization style, and scenario assignment.</div>`,
+    `<div class="note">Simulation-only object (electromagnetic-pulse source): configurable radius, visualization style, and scenario assignment. This is not real weather data.</div>`,
     900, 130);
 }
 

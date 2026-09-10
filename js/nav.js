@@ -1,9 +1,9 @@
 // Top nav tablist, footer mode strip, scenario manager buttons, and the
 // footer mode modals (AI Summary / 3D Viewer / Scenarios / Report).
 
-import { storms, pulses } from './data.js';
-import { sim, refs } from './state.js';
+import { sim, refs, appData } from './state.js';
 import { showModal, closeModal, isModalOpen } from './modal.js';
+import { isReal } from './model.js';
 import { showWorkspace } from './workspaces.js';
 
 let navTabs = [];
@@ -45,8 +45,14 @@ function initModeStrip() {
     mode.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); mode.click(); } });
   });
 
-  document.getElementById('reportBtn').onclick = () => showModal('AI Mission Summary',
-    `<div class="detail-row"><span>Active Storms</span><b>${storms.length}</b></div><div class="detail-row"><span>Pulse Sources</span><b>${pulses.length}</b></div><div class="detail-row"><span>Highest Exposure</span><b>${Math.round(Math.max(...storms.map(s => s.pulse)))}%</b></div><div class="detail-row"><span>Primary Region</span><b>Gulf / Central Plains</b></div><div class="note">Summary describes the current simulation state only. Observed weather layers and hypothetical simulation outputs should remain clearly separated.</div>`, 980, 120);
+  document.getElementById('reportBtn').onclick = () => {
+    const storms = appData.storms, emps = appData.emps;
+    const exposures = storms.map(s => s.pulse).filter(v => v !== undefined);
+    const maxExp = exposures.length ? Math.round(Math.max(...exposures)) : 0;
+    const observed = storms.filter(s => isReal(s.provenance)).length;
+    showModal('AI Mission Summary',
+      `<div class="detail-row"><span>Active Storms</span><b>${storms.length}</b></div><div class="detail-row"><span>Real / Simulated</span><b>${observed} / ${storms.length - observed}</b></div><div class="detail-row"><span>EMP Sources</span><b>${emps.length}</b></div><div class="detail-row"><span>Highest Exposure</span><b>${maxExp}%</b></div><div class="detail-row"><span>Data Source</span><b>${(appData.meta || {}).mode || 'mock'}</b></div><div class="note">Real (observed/forecast) weather from NWS and hypothetical simulation outputs (EMP sources) are kept clearly separated. Simulated objects are marked SIM.</div>`, 980, 120);
+  };
   document.getElementById('viewerBtn').onclick = () => showModal('3D Storm Viewer',
     `<div class="mini3d"><div class="vortex"></div></div><div class="detail-row"><span>Selected Object</span><b>${sim.selected}</b></div><div class="detail-row"><span>View Mode</span><b>Rotating Vortex</b></div><div class="detail-row"><span>Layer</span><b>Wind + Pulse Field</b></div><div class="note">Placeholder for future rotating hurricane/tornado inspection workspace.</div>`, 940, 210);
   document.getElementById('scenarioBtn').onclick = () => showModal('Scenario Manager',

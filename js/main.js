@@ -1,35 +1,80 @@
-// App entry point: initializes modules in dependency order.
+// App entry point: loads normalized data, then initializes modules in order.
 
+import { appData, config } from './state.js';
+import { load } from './datasource.js';
 import { initModal } from './modal.js';
-import { initMap } from './map.js';
-import { initCharts } from './charts.js';
+import { initMap, drawObjects } from './map.js';
+import { initCharts, rebuildCharts } from './charts.js';
 import { renderStormList, updateSummary, renderPulses, renderThumbs } from './panels.js';
 import { initTimeline } from './timeline.js';
 import { initNav } from './nav.js';
 
-// 1. Modal (used by everything else via events).
-initModal();
+// Surface a non-blocking banner when data is degraded/mocked so the user always
+// knows whether they're looking at live or fallback data.
+function setSourceNotice(meta) {
+  const label = meta.mode === 'nws' ? 'Live NWS' : meta.mode === 'both' ? 'NWS + Concept' : 'Concept (mock)';
+  const modeEl = document.querySelector('.telemetry .metric:last-child b');
+  if (modeEl) modeEl.textContent = meta.degraded ? 'Fallback' : (meta.mode === 'mock' ? 'Concept' : 'Live');
+  if (meta.degraded) {
+    console.warn(`Data source "${meta.mode}" degraded — using fallback. Reason: ${meta.error || 'unknown'}`);
+  }
+  console.info(`WARP data source: ${label}`, meta);
+}
 
-// 2. Map + markers/layers (creates refs.map; drawObjects renders storm markers).
-initMap();
+async function boot() {
+  // 1. Load normalized entities from the configured source (never throws).
+  const result = await load(config.mode);
+  appData.storms = result.storms;
+  appData.emps = result.emps;
+  appData.meta = result.meta;
+  setSourceNotice(result.meta);
 
-// 3. Panels (storm list, summary, pulse manager, imagery thumbnails).
-renderStormList();
-updateSummary();
-renderPulses();
-renderThumbs();
+  // 2. Modal (used by everything else via events).
+  initModal();
 
-// 4. Deck charts (must exist before the animation loop references them).
-initCharts();
+  // 3. Map + markers/layers (creates refs.map; drawObjects renders entities).
+  initMap();
 
-// 5. Timeline / transport controls + animation loop.
-initTimeline();
+  // 4. Panels (storm list, summary, EMP manager, imagery thumbnails).
+  renderStormList();
+  updateSummary();
+  renderPulses();
+  renderThumbs();
 
-// 6. Navigation (tabs, mode strip, scenario buttons).
-initNav();
+  // 5. Deck charts (must exist before the animation loop references them).
+  initCharts();
 
-// 7. Simulation clock ticker.
-setInterval(() => {
-  const d = new Date(Date.UTC(2025, 4, 20, 14, 35, 22 + Math.floor(performance.now() / 1000)));
-  document.getElementById('simClock').textContent = d.toISOString().replace('T', ' ').slice(11, 19) + ' UTC';
-}, 1000);
+  // 6. Timeline / transport controls + animation loop.
+  initTimeline();
+
+  // 7. Navigation (tabs, mode strip, scenario buttons).
+  initNav();
+
+  // 8. Simulation clock ticker.
+  setInterval(() => {
+    const d = new Date(Date.UTC(2025, 4, 20, 14, 35, 22 + Math.floor(performance.now() / 1000)));
+    document.getElementById('simClock').textContent = d.toISOString().replace('T', ' ').slice(11, 19) + ' UTC';
+  }, 1000);
+}
+
+boot();
+
+// Expose a tiny console API so users can switch data sources without a rebuild:
+//   WARP.setMode('nws'); WARP.setMode('both'); WARP.setMode('mock');
+window.WARP = {
+  async setMode(mode) {
+    config.mode = mode;
+    const result = await load(mode);
+    appData.storms = result.storms;
+    appData.emps = result.emps;
+    appData.meta = result.meta;
+    setSourceNotice(result.meta);
+    drawObjects();
+    rebuildCharts();
+    renderStormList();
+    updateSummary();
+    renderPulses();
+    return result.meta;
+  },
+  get data() { return appData; }
+};
