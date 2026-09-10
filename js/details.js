@@ -15,7 +15,8 @@ function provBanner(entity) {
 
 export function stormDetails(s) {
   const rows = [
-    ['Category / Class', dash(s.cat)],
+    ['Name', dash(s.name)],
+    ['Category / Class', dash(s.classLabel || s.cat)],
     ['Event', dash(s.event)],
     ['Wind', dash(s.wind, ' mph')],
     ['Pressure', dash(s.pressure, ' mb')],
@@ -23,11 +24,16 @@ export function stormDetails(s) {
     ['Forward Speed', dash(s.speed, ' mph')],
     ['Pulse Exposure', s.pulse !== undefined ? Math.round(s.pulse) + '%' : '—'],
     ['Source', dash(s.source)]
-  ];
-  const areaNote = s.headline ? `<div class="note">${s.headline}${s.areaDesc ? '<br><small>' + s.areaDesc + '</small>' : ''}</div>`
-    : `<div class="note">Storm inspector: track history, forecast path, intensity trace and affected areas will expand here.</div>`;
+  ].filter(([, v]) => v !== '—' || true); // keep all rows (— is meaningful)
+  // Notes: NWS headline/area, or the NHC approximate-track caveat.
+  let note = '';
+  if (s.headline) note = `<div class="note">${s.headline}${s.areaDesc ? '<br><small>' + s.areaDesc + '</small>' : ''}</div>`;
+  else note = `<div class="note">Storm inspector: track history, forecast path, intensity trace and affected areas will expand here.</div>`;
+  if (s.trackApprox) {
+    note += `<div class="note" style="border-color:rgba(56,224,255,.5)">⚠ Forward track shown is <b>approximate</b> — derived from the reported motion vector, <b>not</b> the official NHC forecast cone.</div>`;
+  }
   showModal(`${s.id} ${dash(s.type)} Inspector`,
-    provBanner(s) + rows.map(([k, v]) => `<div class="detail-row"><span>${k}</span><b>${v}</b></div>`).join('') + areaNote,
+    provBanner(s) + rows.map(([k, v]) => `<div class="detail-row"><span>${k}</span><b>${v}</b></div>`).join('') + note,
     300, 118);
 }
 

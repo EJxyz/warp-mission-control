@@ -12,11 +12,16 @@ import { initNav } from './nav.js';
 // Surface a non-blocking banner when data is degraded/mocked so the user always
 // knows whether they're looking at live or fallback data.
 function setSourceNotice(meta) {
-  const label = meta.mode === 'nws' ? 'Live NWS' : meta.mode === 'both' ? 'NWS + Concept' : 'Concept (mock)';
+  const label = meta.mode === 'nws' ? 'Live NWS+NHC' : meta.mode === 'both' ? 'NWS+NHC + Concept EMP' : 'Concept (mock)';
   const modeEl = document.querySelector('.telemetry .metric:last-child b');
-  if (modeEl) modeEl.textContent = meta.degraded ? 'Fallback' : (meta.mode === 'mock' ? 'Concept' : 'Live');
+  if (modeEl) {
+    modeEl.textContent = meta.degraded ? 'Fallback' : (meta.mode === 'mock' ? 'Concept' : (meta.partial ? 'Live (partial)' : 'Live'));
+  }
   if (meta.degraded) {
     console.warn(`Data source "${meta.mode}" degraded — using fallback. Reason: ${meta.error || 'unknown'}`);
+  } else if (meta.partial && meta.sources) {
+    const down = Object.entries(meta.sources).filter(([, v]) => v && v.error).map(([k, v]) => `${k}: ${v.error}`);
+    console.warn(`WARP live data partial — one source unavailable. ${down.join('; ')}`);
   }
   console.info(`WARP data source: ${label}`, meta);
 }

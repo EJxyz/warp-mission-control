@@ -21,11 +21,25 @@ North America.
 
 The app loads through a source abstraction (`js/datasource.js`) with three modes:
 
-| Mode   | Storms                          | EMP sources        |
-|--------|---------------------------------|--------------------|
-| `mock` | built-in concept data (SIM)     | concept data (SIM) |
-| `nws`  | live NWS active alerts (US)     | none               |
-| `both` | live NWS storms                 | concept data (SIM) |
+| Mode   | Storms                                      | EMP sources        |
+|--------|---------------------------------------------|--------------------|
+| `mock` | built-in concept data (SIM)                 | concept data (SIM) |
+| `nws`  | live **NWS alerts + NHC cyclones** (real)   | none               |
+| `both` | live NWS alerts + NHC cyclones (real)       | concept data (SIM) |
+
+Live "real weather" comes from two sources, fetched in parallel:
+- **NWS active alerts** ([api.weather.gov](https://www.weather.gov/documentation/services-web-api)) — tornado/severe-thunderstorm/hurricane/etc. alerts, US-only. Warnings are tagged `observed`, watches `forecast`.
+- **NHC active cyclones** ([CurrentStorms.json](https://www.nhc.noaa.gov/CurrentStorms.json)) — live tropical-cyclone position, category, intensity and motion, tagged `observed`.
+
+> **Approximate tracks:** NHC's official forecast cone/track are only published as
+> KMZ/shapefile served **without CORS headers**, so a static site can't fetch them in
+> the browser. Instead, each cyclone's **forward track is *synthesized* from its reported
+> motion vector** (`movementDir` + `movementSpeed`) and clearly marked *approximate — not
+> the official NHC cone* (rendered faint/finely-dashed, with a note in the inspector).
+> A real-cone source can slot in later behind the same entity shape (would require a proxy/backend).
+
+If one live source fails the app uses the other (Mode shows `Live (partial)`); if both fail
+it falls back to concept data (`Fallback`).
 
 Default is `mock`. Switch at runtime from the browser console (no rebuild):
 
@@ -74,6 +88,7 @@ js/
   sources/
     mock.js     # built-in concept data, normalized as simulated entities
     nws.js      # api.weather.gov active-alerts adapter (observed/forecast)
+    nhc.js      # NHC CurrentStorms.json adapter (live cyclones; approximate tracks)
   data.js       # raw concept data (storms, pulses) + SVG icons — mock input only
   state.js      # shared mutable runtime state (sim flags, layers, refs, appData)
   modal.js      # accessible modal dialog (focus trap, Escape, ARIA)

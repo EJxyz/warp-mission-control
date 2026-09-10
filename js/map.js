@@ -60,9 +60,17 @@ export function drawObjects() {
     }
     // Forecast projection line + cone (only if projection geometry exists).
     if (s.proj && s.proj.length) {
-      s._lead = L.polyline([[s.lat, s.lng], ...s.proj], { color: s.type === 'Hurricane' ? '#20bfff' : '#a66cff', weight: 3, dashArray: s.type === 'Hurricane' ? '8 8' : '5 7', opacity: .95 }).addTo(map);
+      // Approximate (motion-derived) tracks render fainter + finely dashed so they
+      // are visually distinct from a source-provided forecast path.
+      const approx = !!s.trackApprox;
+      s._lead = L.polyline([[s.lat, s.lng], ...s.proj], {
+        color: s.color || (s.type === 'Hurricane' ? '#20bfff' : '#a66cff'),
+        weight: approx ? 2 : 3,
+        dashArray: approx ? '2 7' : (s.type === 'Hurricane' ? '8 8' : '5 7'),
+        opacity: approx ? .6 : .95
+      }).addTo(map);
       layers.tracks.push(s._lead);
-      s._cone = L.polygon(coneFor(s), { color: s.color || '#20bfff', weight: 1, fillColor: s.color || '#20bfff', fillOpacity: .10, opacity: .35 }).addTo(map);
+      s._cone = L.polygon(coneFor(s), { color: s.color || '#20bfff', weight: 1, fillColor: s.color || '#20bfff', fillOpacity: approx ? .06 : .10, opacity: approx ? .22 : .35, dashArray: approx ? '3 6' : null }).addTo(map);
       layers.cones.push(s._cone);
     } else {
       s._lead = null; s._cone = null;

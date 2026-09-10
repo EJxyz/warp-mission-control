@@ -3,11 +3,14 @@
 //
 // Modes:
 //   'mock' — offline concept data only (all simulated)
-//   'nws'  — live NWS alerts only (observed/forecast); falls back to mock on error
-//   'both' — live NWS storms + mock EMP sources (EMP is always simulated)
+//   'nws'  — live real weather: NWS alerts + NHC tropical cyclones (observed/forecast).
+//            EMP sources are omitted (they are simulated-only). Falls back to mock
+//            if BOTH live sources fail; tolerates one failing.
+//   'both' — live real weather (NWS + NHC) storms + mock EMP sources (simulated).
 
 import * as mock from './sources/mock.js';
 import * as nws from './sources/nws.js';
+import * as nhc from './sources/nhc.js';
 
 export const MODES = ['mock', 'nws', 'both'];
 
@@ -19,9 +22,33 @@ async function loadMock() {
   return { storms: r.storms, emps: r.emps, meta: { ...r.meta, mode: 'mock', degraded: false } };
 }
 
-async function loadNws(opts) {
-  const r = await nws.load(opts);
-  return { storms: r.storms, emps: r.emps, meta: { ...r.meta, mode: 'nws', degraded: false } };
+// Load the live real-weather sources (NWS alerts + NHC cyclones) in parallel.
+// Returns merged storms plus a per-source status so callers can report partial
+// failures. Throws only if BOTH sources fail.
+async function loadLive(opts) {
+  const [nwsR, nhcR] = await Promise.allSettled([nws.load(opts), nhc.load(opts)]);
+  const storms = [];
+  const status = {};
+  let okCount = 0;
+
+  if (nwsR.status === 'fulfilled') { storms.push(...nwsR.value.storms); status.nws = nwsR.value.meta; okCount++; }
+  else status.nws = { error: String(nwsR.reason && nwsR.reason.message || nwsR.reason) };
+
+  if (nhcR.status === 'fulfilled') { storms.push(...nhcR.value.storms); status.nhc = nhcR.value.meta; okCount++; }
+  else status.nhc = { error: String(nhcR.reason && nhcR.reason.message || nhcR.reason) };
+
+  if (okCount === 0) throw new Error(`live sources failed (nws: ${status.nws.error}; nhc: ${status.nhc.error})`);
+
+  return {
+    storms,
+    partial: okCount < 2, // one source failed but we still have data
+    meta: {
+      source: 'NWS+NHC',
+      fetchedAt: new Date().toISOString(),
+      sources: status,
+      note: 'Live real weather: NWS alerts + NHC cyclones. NHC forward tracks are approximate (motion-derived).'
+    }
+  };
 }
 
 /**
@@ -29,7 +56,7 @@ async function loadNws(opts) {
  * data with meta.degraded=true and meta.error set, so callers can surface a
  * warning while still rendering something honest.
  * @param {'mock'|'nws'|'both'} mode
- * @param {object} [opts] forwarded to the NWS source (e.g. { area })
+ * @param {object} [opts] forwarded to the live sources (e.g. { area })
  */
 export async function load(mode = 'mock', opts = {}) {
   try {
@@ -37,10 +64,8 @@ export async function load(mode = 'mock', opts = {}) {
 
     if (mode === 'nws') {
       try {
-        const r = await loadNws(opts);
-        // If live returns zero mappable storms, keep it (empty is a valid state)
-        // but flag it so the UI can show an empty/notice state.
-        return r;
+        const live = await loadLive(opts);
+        return { storms: live.storms, emps: [], meta: { ...live.meta, mode: 'nws', degraded: false, partial: live.partial } };
       } catch (err) {
         const fb = await loadMock();
         fb.meta = { ...fb.meta, mode: 'nws', degraded: true, error: String(err.message || err) };
@@ -51,11 +76,11 @@ export async function load(mode = 'mock', opts = {}) {
     if (mode === 'both') {
       const mockRes = await loadMock();
       try {
-        const live = await loadNws(opts);
+        const live = await loadLive(opts);
         return {
           storms: live.storms,
           emps: mockRes.emps, // EMP sources always come from the simulated side
-          meta: { ...live.meta, mode: 'both', degraded: false }
+          meta: { ...live.meta, mode: 'both', degraded: false, partial: live.partial }
         };
       } catch (err) {
         return {
@@ -75,4 +100,4 @@ export async function load(mode = 'mock', opts = {}) {
   }
 }
 
-export const sources = { mock: mock.info, nws: nws.info };
+export const sources = { mock: mock.info, nws: nws.info, nhc: nhc.info };
