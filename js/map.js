@@ -1,27 +1,37 @@
 // Leaflet map: base layers, labels, storm/pulse markers, tracks, cones,
 // lightning, and layer toggles. L is loaded globally from the Leaflet CDN.
 
-import { storms, pulses, hurricaneSvg, tornadoSvg } from './data.js';
-import { layers, sim, refs } from './state.js';
+import { hurricaneSvg, tornadoSvg } from './data.js';
+import { layers, sim, refs, appData } from './state.js';
 import { stormDetails, pulseDetails, showState } from './details.js';
 import { renderStormList, updateSummary } from './panels.js';
+import { Provenance, isReal } from './model.js';
+
+// A short provenance badge overlaid on markers so simulated data is never
+// mistaken for real observations at a glance.
+function provBadge(entity) {
+  if (isReal(entity.provenance)) return '';
+  return `<div class="marker-prov">SIM</div>`;
+}
 
 function makeStormIcon(s) {
-  return L.divIcon({ html: `<div class="storm-marker" style="color:${s.color}">${s.type === 'Hurricane' ? hurricaneSvg : tornadoSvg}</div><div class="marker-tag">${s.id}</div>`, className: '', iconSize: [72, 46] });
+  const type = s.type === 'Hurricane' ? hurricaneSvg : tornadoSvg;
+  return L.divIcon({ html: `<div class="storm-marker" style="color:${s.color || '#20bfff'}">${type}</div><div class="marker-tag">${s.id}</div>${provBadge(s)}`, className: '', iconSize: [72, 46] });
 }
 function makePulseIcon(p) {
-  return L.divIcon({ html: `<div class="pulse-marker"></div><div class="pulse-id">${p.id}</div>`, className: '', iconSize: [72, 46] });
+  return L.divIcon({ html: `<div class="pulse-marker"></div><div class="pulse-id">${p.id}</div><div class="marker-prov">SIM</div>`, className: '', iconSize: [72, 46] });
 }
 
 function coneFor(s) {
+  const proj = s.proj || [];
   return [[s.lat, s.lng],
-    ...s.proj.map((p, i) => [p[0] + (i + 1) * .75, p[1] + (i + 1) * .35]),
-    ...s.proj.slice().reverse().map((p, i) => [p[0] - (s.proj.length - i) * .75, p[1] - (s.proj.length - i) * .35])];
+    ...proj.map((p, i) => [p[0] + (i + 1) * .75, p[1] + (i + 1) * .35]),
+    ...proj.slice().reverse().map((p, i) => [p[0] - (proj.length - i) * .75, p[1] - (proj.length - i) * .35])];
 }
 
 // Keep dependent map layers in sync when a storm marker is dragged/moved.
 function syncStorm(s) {
-  s._lead && s._lead.setLatLngs([[s.lat, s.lng], ...s.proj]);
+  s._lead && s._lead.setLatLngs([[s.lat, s.lng], ...(s.proj || [])]);
   s._cone && s._cone.setLatLngs(coneFor(s));
   s._marker && s._marker.setLatLng([s.lat, s.lng]);
   renderStormList();
@@ -41,21 +51,42 @@ export function drawObjects() {
   layers.cones.forEach(l => map.removeLayer(l));
   layers.pulses.forEach(l => map.removeLayer(l));
   layers.markers = []; layers.tracks = []; layers.cones = []; layers.pulses = [];
-  storms.forEach(s => {
-    layers.tracks.push(L.polyline(s.track, { color: '#a8b8c2', weight: 2, dashArray: '6 8', opacity: .7 }).addTo(map));
-    s._lead = L.polyline([[s.lat, s.lng], ...s.proj], { color: s.type === 'Hurricane' ? '#20bfff' : '#a66cff', weight: 3, dashArray: s.type === 'Hurricane' ? '8 8' : '5 7', opacity: .95 }).addTo(map);
-    layers.tracks.push(s._lead);
-    s._cone = L.polygon(coneFor(s), { color: s.color, weight: 1, fillColor: s.color, fillOpacity: .10, opacity: .35 }).addTo(map);
-    layers.cones.push(s._cone);
-    const m = L.marker([s.lat, s.lng], { icon: makeStormIcon(s), draggable: true })
+  appData.storms.forEach(s => {
+    // Only simulated storms are user-editable; real observations are locked.
+    const editable = !isReal(s.provenance);
+    // Historical track (only if the source provided one — NWS alerts don't).
+    if (s.track && s.track.length) {
+      layers.tracks.push(L.polyline(s.track, { color: '#a8b8c2', weight: 2, dashArray: '6 8', opacity: .7 }).addTo(map));
+    }
+    // Forecast projection line + cone (only if projection geometry exists).
+    if (s.proj && s.proj.length) {
+      // Approximate (motion-derived) tracks render fainter + finely dashed so they
+      // are visually distinct from a source-provided forecast path.
+      const approx = !!s.trackApprox;
+      s._lead = L.polyline([[s.lat, s.lng], ...s.proj], {
+        color: s.color || (s.type === 'Hurricane' ? '#20bfff' : '#a66cff'),
+        weight: approx ? 2 : 3,
+        dashArray: approx ? '2 7' : (s.type === 'Hurricane' ? '8 8' : '5 7'),
+        opacity: approx ? .6 : .95
+      }).addTo(map);
+      layers.tracks.push(s._lead);
+      s._cone = L.polygon(coneFor(s), { color: s.color || '#20bfff', weight: 1, fillColor: s.color || '#20bfff', fillOpacity: approx ? .06 : .10, opacity: approx ? .22 : .35, dashArray: approx ? '3 6' : null }).addTo(map);
+      layers.cones.push(s._cone);
+    } else {
+      s._lead = null; s._cone = null;
+    }
+    const m = L.marker([s.lat, s.lng], { icon: makeStormIcon(s), draggable: editable })
       .on('click', () => { sim.selected = s.id; renderStormList(); stormDetails(s); })
-      .on('drag', e => { const ll = e.target.getLatLng(); s.lat = +ll.lat.toFixed(3); s.lng = +ll.lng.toFixed(3); syncStorm(s); })
-      .on('dragend', () => { sim.selected = s.id; syncStorm(s); })
       .addTo(map);
+    if (editable) {
+      m.on('drag', e => { const ll = e.target.getLatLng(); s.lat = +ll.lat.toFixed(3); s.lng = +ll.lng.toFixed(3); syncStorm(s); })
+       .on('dragend', () => { sim.selected = s.id; syncStorm(s); });
+    }
     s._marker = m;
     layers.markers.push(m);
   });
-  pulses.forEach(p => {
+  // EMP sources are always simulated and always editable.
+  appData.emps.forEach(p => {
     p._circle = L.circle([p.lat, p.lng], { radius: 180000, color: '#ffd64a', weight: 2, fillColor: '#ffd64a', fillOpacity: .11 }).addTo(map);
     layers.pulses.push(p._circle);
     const pm = L.marker([p.lat, p.lng], { icon: makePulseIcon(p), draggable: true })
