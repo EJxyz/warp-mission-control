@@ -21,6 +21,8 @@
 .control-block{margin:10px;border:1px solid var(--line);border-radius:8px;background:rgba(2,13,20,.82);overflow:hidden}.control-body{padding:10px 12px}.btn{height:31px;border:1px solid rgba(134,210,255,.35);border-radius:5px;background:linear-gradient(#132e43,#071b29);color:#f2fbff;font-weight:900;cursor:pointer}.btn:hover{border-color:var(--blue);box-shadow:0 0 14px rgba(32,191,255,.18)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.stack{display:grid;gap:7px}.range{width:100%;accent-color:var(--blue)}.toggle{display:flex;justify-content:space-between;gap:8px;padding:6px 0;font-size:12px;color:#dbeaf2}.toggle input{accent-color:var(--blue)}.scenario{display:grid;gap:6px}.scenario button{height:30px;text-align:left;padding-left:10px;border:1px solid rgba(255,255,255,.13);background:#0b2030;color:#d8ecf5;border-radius:4px}.scenario button.active{border-color:var(--gold);color:#fff;background:rgba(255,214,74,.14)}.pulse-row{display:grid;grid-template-columns:42px 1fr 42px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:12px}.pulse-row b{color:var(--gold)}.pulse-row span{color:var(--muted)}
 .footer{display:grid;grid-template-columns:270px 1fr 390px;align-items:center;border-top:1px solid var(--line);background:rgba(0,8,13,.95);z-index:900}.transport{display:flex;gap:8px;padding:0 14px}.play{width:44px;color:var(--green)}.timeline-wrap{display:grid;gap:5px;padding-right:16px}.timeline-top{display:flex;justify-content:space-between;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:900}.timeline{position:relative;height:18px;border:1px solid rgba(134,210,255,.35);background:linear-gradient(90deg,rgba(32,191,255,.18),rgba(255,214,74,.18),rgba(55,224,122,.18));overflow:hidden}.progress{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,rgba(32,191,255,.70),rgba(255,255,255,.35));box-shadow:0 0 18px rgba(32,191,255,.45)}#timeSlider{position:absolute;inset:0;width:100%;opacity:0;cursor:pointer}.mode-strip{display:grid;grid-template-columns:repeat(4,1fr);height:100%;border-left:1px solid rgba(255,255,255,.12)}.mode{display:grid;place-items:center;text-transform:uppercase;font-size:11px;font-weight:950;color:#b9cdd7;border-right:1px solid rgba(255,255,255,.10);cursor:pointer}.mode.active{color:#fff;background:rgba(32,191,255,.14)}
 .modal{position:absolute;z-index:1400;display:none;width:380px;border:1px solid rgba(134,210,255,.58);border-radius:9px;background:rgba(4,17,27,.98);box-shadow:0 24px 70px #000;color:#eef9ff}.modal.show{display:block}.modal-head{height:42px;display:flex;align-items:center;justify-content:space-between;padding:0 13px;border-bottom:1px solid rgba(255,255,255,.14);font-weight:950;text-transform:uppercase}.modal-close{background:transparent;border:0;color:white;font-size:22px;cursor:pointer}.modal-body{padding:12px;font-size:13px;line-height:1.55}.detail-row{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08);padding:6px 0}.detail-row b{color:#fff}.note{margin-top:9px;color:#b6cbd5;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);padding:8px;border-radius:5px}.mini3d{height:150px;border:1px solid rgba(134,210,255,.30);border-radius:7px;background:radial-gradient(circle at 50% 45%,rgba(32,191,255,.25),transparent 34%),linear-gradient(#071823,#02070b);display:grid;place-items:center;overflow:hidden}.vortex{width:118px;height:118px;border-radius:50%;border:3px solid rgba(32,191,255,.75);box-shadow:0 0 24px rgba(32,191,255,.52), inset 0 0 20px rgba(32,191,255,.25);animation:spin 5s linear infinite;background:conic-gradient(from 0deg,transparent,rgba(32,191,255,.9),transparent,rgba(255,255,255,.55),transparent)}@keyframes spin{to{transform:rotate(360deg)}}
+/* Tab workspace overlays: real full-panel views layered over the map area */
+.workspace{position:absolute;inset:0;z-index:600;display:none;flex-direction:column;background:linear-gradient(160deg,rgba(2,10,17,.97),rgba(4,17,28,.98) 55%,rgba(10,6,22,.97));overflow:hidden}.workspace.show{display:flex}.ws-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,rgba(32,191,255,.10),transparent)}.ws-head h2{margin:0;font-size:18px;letter-spacing:.6px;text-transform:uppercase}.ws-head p{margin:3px 0 0;color:var(--muted);font-size:12px}.ws-body{flex:1;min-height:0;overflow:auto;padding:16px 20px}.ws-grid{display:grid;gap:14px}.ws-cards{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}.ws-card{border:1px solid var(--line);border-radius:9px;background:rgba(1,8,14,.7);padding:14px}.ws-card h4{margin:0 0 10px;font-size:12px;text-transform:uppercase;color:#eaf8ff;letter-spacing:.4px;border-bottom:1px solid var(--line2);padding-bottom:8px}.ws-chart{position:relative;height:280px}.ws-two{grid-template-columns:1fr 1fr}.ws-kpi{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:14px}.kpi{border:1px solid var(--line);border-radius:9px;padding:12px 14px;background:rgba(1,8,14,.7)}.kpi span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800}.kpi b{display:block;margin-top:6px;font-size:24px;color:#fff;font-variant-numeric:tabular-nums}.ws-table{width:100%;border-collapse:collapse;font-size:12px}.ws-table th,.ws-table td{border:1px solid var(--line2);padding:7px 9px;text-align:left}.ws-table th{color:#d9eef7;background:rgba(255,255,255,.03);text-transform:uppercase;font-size:10.5px}.ws-close{height:34px;padding:0 16px}@media(max-width:1320px){.ws-two{grid-template-columns:1fr}}
 @media(max-width:1320px){.main{grid-template-columns:245px 1fr}.right{display:none}.analytics{grid-template-columns:1fr 1fr}.analytics .glass:nth-child(n+3){display:none}.topbar{grid-template-columns:330px 1fr 300px}.telemetry .metric:nth-child(n+4){display:none}.footer{grid-template-columns:220px 1fr}.mode-strip{display:none}}
 
 /* Hybrid color restoration: preserves the graph-heavy WARP look while keeping platform navigation compact. */
@@ -47,19 +49,19 @@
 <div id="app" class="app">
 <header class="topbar">
   <div class="brand"><div class="mark"></div><div><h1>WARP Mission Control</h1><small>Weather Anomalies Research Platform · Hybrid Color Build</small></div></div>
-  <nav class="nav"><div class="tab active">Mission Ctrl</div><div class="tab">GIS</div><div class="tab">Simulation</div><div class="tab">Pulse Lab</div><div class="tab">Analytics</div><div class="tab">Scenarios</div></nav>
+  <nav class="nav" aria-label="Primary views"><div class="tab active">Mission Ctrl</div><div class="tab">GIS</div><div class="tab">Simulation</div><div class="tab">Pulse Lab</div><div class="tab">Analytics</div><div class="tab">Scenarios</div></nav>
   <div class="telemetry"><div class="metric"><span>Simulation Time</span><b id="simClock">14:35:22 UTC</b></div><div class="metric"><span>Scenario</span><b class="gold" id="scenarioName">Gulf Track</b></div><div class="metric"><span>System</span><b class="green">Online</b></div><div class="metric"><span>Mode</span><b>Concept</b></div></div>
 </header>
 <main class="main">
   <aside class="left"><div class="section-title">Active Storms <span class="badge" id="stormCount">8</span></div><div class="storm-list" id="stormList"></div></aside>
-  <section class="map-wrap"><div id="map" class="map"></div><div class="map-title">NORTH AMERICAN WEATHER ANOMALIES DOMAIN</div><div class="deck"><div class="analytics"><div class="glass"><h3>Intensity Over Time</h3><canvas id="intensityChart" class="chart"></canvas></div><div class="glass"><h3>Pulse Impact</h3><canvas id="pulseChart" class="chart"></canvas></div><div class="glass"><h3>Mission Summary</h3><div class="summary-body" id="missionSummary"></div></div><div class="glass"><h3>Storm Status</h3><table class="status-table" id="statusTable"></table></div></div><div class="thumbs" id="thumbs"></div></div></section>
+  <section class="map-wrap"><div id="map" class="map"></div><div class="map-title">NORTH AMERICAN WEATHER ANOMALIES DOMAIN</div><div class="deck"><div class="analytics"><div class="glass"><h3>Intensity Over Time</h3><canvas id="intensityChart" class="chart"></canvas></div><div class="glass"><h3>Pulse Impact</h3><canvas id="pulseChart" class="chart"></canvas></div><div class="glass"><h3>Mission Summary</h3><div class="summary-body" id="missionSummary"></div></div><div class="glass"><h3>Storm Status</h3><table class="status-table" id="statusTable"></table></div></div><div class="thumbs" id="thumbs"></div></div><div class="workspace" id="workspace"><div class="ws-head"><div><h2 id="wsTitle">Workspace</h2><p id="wsSubtitle"></p></div><button class="btn ws-close" id="wsClose">← Back to Mission Control</button></div><div class="ws-body" id="wsBody"></div></div></section>
   <aside class="right">
     <div class="control-block"><div class="section-title">Simulation Control <span id="speedLabel">1.0x</span></div><div class="control-body stack"><input id="speed" class="range" type="range" min=".2" max="3" step=".1" value="1"><div class="grid2"><button class="btn" id="pauseBtn">Ⅱ Pause</button><button class="btn" id="stepBtn">▶ Step</button></div><button class="btn" id="resetBtn">↻ Reset Run</button></div></div>
     <div class="control-block"><div class="section-title">Layer Manager</div><div class="control-body"><label class="toggle">Satellite Clouds <input id="cloudToggle" type="checkbox" checked></label><label class="toggle">Pulse Fields <input id="pulseToggle" type="checkbox" checked></label><label class="toggle">Storm Tracks <input id="trackToggle" type="checkbox" checked></label><label class="toggle">Forecast Cones <input id="coneToggle" type="checkbox" checked></label><label class="toggle">Lightning <input id="lightningToggle" type="checkbox" checked></label><label class="toggle">Tornado Alley <input id="alleyToggle" type="checkbox" checked></label><label class="toggle">State Borders <input id="stateToggle" type="checkbox" checked></label></div></div>
     <div class="control-block"><div class="section-title">Scenario Manager</div><div class="control-body scenario" id="scenarioButtons"><button class="active">Gulf Track</button><button>Plains Outbreak</button><button>Coastal Impact</button><button>Baseline</button></div></div>
     <div class="control-block"><div class="section-title">Pulse Manager</div><div class="control-body" id="pulseManager"></div></div>
   </aside>
-  <div class="modal" id="modal"><div class="modal-head"><span id="modalTitle">Details</span><button class="modal-close" id="modalClose">×</button></div><div class="modal-body" id="modalBody"></div></div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true"><div class="modal-head"><span id="modalTitle">Details</span><button class="modal-close" id="modalClose" aria-label="Close dialog">×</button></div><div class="modal-body" id="modalBody"></div></div>
 </main>
 <footer class="footer">
   <div class="transport"><button class="btn" id="backBtn">≪</button><button class="btn" id="playBtn">▶</button><button class="btn" id="fwdBtn">≫</button></div>
@@ -88,17 +90,27 @@ L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/Wo
 const cloudPane=map.createPane('clouds');cloudPane.style.zIndex=350;cloudPane.style.pointerEvents='none';
 const cloudSvg='data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520"><filter id="b"><feGaussianBlur stdDeviation="16"/></filter><g filter="url(#b)" fill="white"><ellipse opacity=".28" cx="780" cy="70" rx="330" ry="58"/><ellipse opacity=".22" cx="820" cy="430" rx="210" ry="44"/><ellipse opacity=".20" cx="380" cy="270" rx="180" ry="38"/><ellipse opacity=".18" cx="160" cy="340" rx="240" ry="44"/></g></svg>`);
 layers.cloud.push(L.imageOverlay(cloudSvg,[[5,-130],[62,-50]],{opacity:.50,pane:'clouds'}).addTo(map));
-fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json').then(r=>r.json()).then(g=>{layers.states=L.geoJSON(g,{style:{color:'rgba(255,255,255,.56)',weight:1,fillOpacity:0},onEachFeature:(f,l)=>l.on('click',()=>showState(f.properties.name))}).addTo(map)});
+fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(g=>{layers.states=L.geoJSON(g,{style:{color:'rgba(255,255,255,.56)',weight:1,fillOpacity:0},onEachFeature:(f,l)=>l.on('click',()=>showState(f.properties.name))});if(document.getElementById('stateToggle').checked)layers.states.addTo(map)}).catch(err=>{console.warn('State borders unavailable:',err.message);const t=document.getElementById('stateToggle');if(t){t.checked=false;t.disabled=true;const lbl=t.closest('.toggle');if(lbl)lbl.title='State borders could not be loaded (offline or source unavailable)'}});
 L.marker([57,-102],{icon:L.divIcon({html:'<div class="north-label">CANADA</div>',className:'',iconSize:[120,24]})}).addTo(map);L.marker([39,-98],{icon:L.divIcon({html:'<div class="north-label">UNITED STATES</div>',className:'',iconSize:[180,24]})}).addTo(map);L.marker([23.5,-102],{icon:L.divIcon({html:'<div class="north-label">MEXICO</div>',className:'',iconSize:[120,24]})}).addTo(map);L.marker([9,-66],{icon:L.divIcon({html:'<div class="north-label">VENEZUELA</div>',className:'',iconSize:[150,24]})}).addTo(map);
 [['TX',31,-99],['OK',35.6,-97.5],['KS',38.5,-98],['NE',41.5,-99.7],['SD',44.5,-100],['LA',31,-92],['FL',27.8,-81.7],['GA',32.7,-83.4],['NC',35.5,-79.5],['CA',36.7,-119.7],['CO',39,-105.6],['MN',46.3,-94.3],['MI',44.5,-85],['NY',42.9,-75]].forEach(([c,lat,lng])=>L.marker([lat,lng],{icon:L.divIcon({html:`<div class="state-label ${['TX','OK','KS','NE','SD'].includes(c)?'hot':''}">${c}</div>`,className:'',iconSize:[32,16]})}).addTo(map));
 layers.alley=L.polygon([[49,-104],[49,-94],[31.8,-94],[31.8,-104]],{color:'#ffd64a',weight:2,fillColor:'#ffd64a',fillOpacity:.18}).addTo(map);
 function makeStormIcon(s){return L.divIcon({html:`<div class="storm-marker" style="color:${s.color}">${s.type==='Hurricane'?hurricaneSvg:tornadoSvg}</div><div class="marker-tag">${s.id}</div>`,className:'',iconSize:[72,46]})}
 function makePulseIcon(p){return L.divIcon({html:`<div class="pulse-marker"></div><div class="pulse-id">${p.id}</div>`,className:'',iconSize:[72,46]})}
-function showModal(title,html,x=520,y=120){const m=document.getElementById('modal');document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=html;m.style.left=x+'px';m.style.top=y+'px';m.classList.add('show')}document.getElementById('modalClose').onclick=()=>document.getElementById('modal').classList.remove('show');
+let modalReturnFocus=null;
+function closeModal(){const m=document.getElementById('modal');m.classList.remove('show');m.setAttribute('aria-hidden','true');if(modalReturnFocus&&modalReturnFocus.focus){modalReturnFocus.focus()}modalReturnFocus=null}
+function showModal(title,html,x=520,y=120){const m=document.getElementById('modal');modalReturnFocus=document.activeElement;document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=html;m.style.left=x+'px';m.style.top=y+'px';m.classList.add('show');m.setAttribute('aria-hidden','false');document.getElementById('modalClose').focus()}
+document.getElementById('modalClose').onclick=closeModal;
+// Escape closes the modal; basic focus trap keeps Tab within the dialog while open.
+document.addEventListener('keydown',e=>{const m=document.getElementById('modal');if(!m.classList.contains('show'))return;if(e.key==='Escape'){e.preventDefault();closeModal();return}if(e.key==='Tab'){const f=m.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');if(!f.length)return;const first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 function stormDetails(s){showModal(`${s.id} ${s.type} Inspector`,`<div class="detail-row"><span>Category / EF</span><b>${s.cat}</b></div><div class="detail-row"><span>Wind</span><b>${s.wind} mph</b></div><div class="detail-row"><span>Pressure</span><b>${s.pressure||'-'} mb</b></div><div class="detail-row"><span>Heading</span><b>${s.heading}</b></div><div class="detail-row"><span>Forward Speed</span><b>${s.speed} mph</b></div><div class="detail-row"><span>Pulse Exposure</span><b>${Math.round(s.pulse)}%</b></div><div class="note">Storm inspector workspace placeholder: track history, forecast path, intensity trace, affected states, and scenario notes will appear here.</div>`,300,118)}
 function pulseDetails(p){showModal(`${p.id} Pulse Control`,`<div class="detail-row"><span>Impact</span><b>${p.impact}%</b></div><div class="detail-row"><span>Power</span><b>${p.power}</b></div><div class="detail-row"><span>Latitude</span><b>${p.lat.toFixed(2)}</b></div><div class="detail-row"><span>Longitude</span><b>${p.lng.toFixed(2)}</b></div><div class="note">Simulation-only object: configurable radius, visualization style, and scenario assignment.</div>`,900,130)}
 function showState(name){showModal(`${name} State Watch`,`<div class="detail-row"><span>Risk Type</span><b>Simulation Watch</b></div><div class="detail-row"><span>Layer</span><b>Storm + Pulse Exposure</b></div><div class="detail-row"><span>Status</span><b>Monitored</b></div><div class="note">Future version: click a state to show affected storms, projected arrival, watch/warning state, and scenario notes.</div>`,560,150)}
-function drawObjects(){layers.markers.forEach(l=>map.removeLayer(l));layers.tracks.forEach(l=>map.removeLayer(l));layers.cones.forEach(l=>map.removeLayer(l));layers.pulses.forEach(l=>map.removeLayer(l));layers={...layers,markers:[],tracks:[],cones:[],pulses:[],lightning:layers.lightning,cloud:layers.cloud};storms.forEach(s=>{layers.tracks.push(L.polyline(s.track,{color:'#a8b8c2',weight:2,dashArray:'6 8',opacity:.7}).addTo(map));layers.tracks.push(L.polyline([[s.lat,s.lng],...s.proj],{color:s.type==='Hurricane'?'#20bfff':'#a66cff',weight:3,dashArray:s.type==='Hurricane'?'8 8':'5 7',opacity:.95}).addTo(map));const conePts=[[s.lat,s.lng],...s.proj.map((p,i)=>[p[0]+(i+1)*.75,p[1]+(i+1)*.35]),...s.proj.slice().reverse().map((p,i)=>[p[0]-(s.proj.length-i)*.75,p[1]-(s.proj.length-i)*.35])];layers.cones.push(L.polygon(conePts,{color:s.color,weight:1,fillColor:s.color,fillOpacity:.10,opacity:.35}).addTo(map));const m=L.marker([s.lat,s.lng],{icon:makeStormIcon(s),draggable:true}).on('click',()=>{selected=s.id;renderStormList();stormDetails(s)}).addTo(map);layers.markers.push(m)});pulses.forEach(p=>{layers.pulses.push(L.circle([p.lat,p.lng],{radius:180000,color:'#ffd64a',weight:2,fillColor:'#ffd64a',fillOpacity:.11}).addTo(map));layers.pulses.push(L.marker([p.lat,p.lng],{icon:makePulseIcon(p),draggable:true}).on('click',()=>pulseDetails(p)).addTo(map))});}
+function coneFor(s){return [[s.lat,s.lng],...s.proj.map((p,i)=>[p[0]+(i+1)*.75,p[1]+(i+1)*.35]),...s.proj.slice().reverse().map((p,i)=>[p[0]-(s.proj.length-i)*.75,p[1]-(s.proj.length-i)*.35])]}
+// Keep dependent map layers in sync when a storm marker is dragged/moved.
+function syncStorm(s){s._lead&&s._lead.setLatLngs([[s.lat,s.lng],...s.proj]);s._cone&&s._cone.setLatLngs(coneFor(s));s._marker&&s._marker.setLatLng([s.lat,s.lng]);renderStormList();updateSummary()}
+// Keep the exposure circle in sync when a pulse marker is dragged/moved.
+function syncPulse(p){p._circle&&p._circle.setLatLng([p.lat,p.lng]);p._marker&&p._marker.setLatLng([p.lat,p.lng])}
+function drawObjects(){layers.markers.forEach(l=>map.removeLayer(l));layers.tracks.forEach(l=>map.removeLayer(l));layers.cones.forEach(l=>map.removeLayer(l));layers.pulses.forEach(l=>map.removeLayer(l));layers={...layers,markers:[],tracks:[],cones:[],pulses:[],lightning:layers.lightning,cloud:layers.cloud};storms.forEach(s=>{layers.tracks.push(L.polyline(s.track,{color:'#a8b8c2',weight:2,dashArray:'6 8',opacity:.7}).addTo(map));s._lead=L.polyline([[s.lat,s.lng],...s.proj],{color:s.type==='Hurricane'?'#20bfff':'#a66cff',weight:3,dashArray:s.type==='Hurricane'?'8 8':'5 7',opacity:.95}).addTo(map);layers.tracks.push(s._lead);s._cone=L.polygon(coneFor(s),{color:s.color,weight:1,fillColor:s.color,fillOpacity:.10,opacity:.35}).addTo(map);layers.cones.push(s._cone);const m=L.marker([s.lat,s.lng],{icon:makeStormIcon(s),draggable:true}).on('click',()=>{selected=s.id;renderStormList();stormDetails(s)}).on('drag',e=>{const ll=e.target.getLatLng();s.lat=+ll.lat.toFixed(3);s.lng=+ll.lng.toFixed(3);syncStorm(s)}).on('dragend',()=>{selected=s.id;syncStorm(s)}).addTo(map);s._marker=m;layers.markers.push(m)});pulses.forEach(p=>{p._circle=L.circle([p.lat,p.lng],{radius:180000,color:'#ffd64a',weight:2,fillColor:'#ffd64a',fillOpacity:.11}).addTo(map);layers.pulses.push(p._circle);const pm=L.marker([p.lat,p.lng],{icon:makePulseIcon(p),draggable:true}).on('click',()=>pulseDetails(p)).on('drag',e=>{const ll=e.target.getLatLng();p.lat=+ll.lat.toFixed(3);p.lng=+ll.lng.toFixed(3);syncPulse(p)}).addTo(map);p._marker=pm;layers.pulses.push(pm)});}
 drawObjects();
 function renderStormList(){const box=document.getElementById('stormList');box.innerHTML='';document.getElementById('stormCount').textContent=storms.length;storms.forEach(s=>{const div=document.createElement('div');div.className='storm-card '+(selected===s.id?'active':'');div.style.setProperty('--accent',s.color);div.innerHTML=`<div class="storm-head"><div class="storm-svg" style="color:${s.color}">${s.type==='Hurricane'?hurricaneSvg:tornadoSvg}</div><div><div class="storm-id">${s.id}</div><div class="storm-type">${s.type}</div></div><div class="storm-cat">${s.cat}</div></div><div class="storm-detail"><span>Wind <b>${s.wind}</b></span><span>Pulse <b>${Math.round(s.pulse)}%</b></span><span>Heading <b>${s.heading}</b></span><span>Speed <b>${s.speed}</b></span></div><div class="bar"><i style="--v:${Math.round(s.intensity*100)}%;background:linear-gradient(90deg,${s.color},var(--green))"></i></div>`;div.onclick=()=>{selected=s.id;map.setView([s.lat,s.lng],5);renderStormList();stormDetails(s)};box.appendChild(div)})}
 renderStormList();
@@ -120,20 +132,137 @@ viewerBtn.onclick=()=>showModal('3D Storm Viewer',`<div class="mini3d"><div clas
 scenarioBtn.onclick=()=>showModal('Scenario Manager',`<div class="detail-row"><span>Gulf Track</span><b>Active</b></div><div class="detail-row"><span>Plains Outbreak</span><b>Ready</b></div><div class="detail-row"><span>Coastal Impact</span><b>Ready</b></div><div class="detail-row"><span>Baseline</span><b>Ready</b></div><div class="note">Future build: save, load, clone, compare, and replay named scenarios.</div>`,940,150);
 exportBtn.onclick=()=>showModal('Report Generator',`<div class="detail-row"><span>Format</span><b>HTML / PDF future</b></div><div class="detail-row"><span>Includes</span><b>Map + Charts + Notes</b></div><div class="detail-row"><span>Scenario</span><b>${scenarioName.textContent}</b></div><div class="note">This will produce an executive summary of the current simulation configuration and visual state.</div>`,940,260);
 
-// Compact platform navigation: keep Mission Control visible and use modal workspaces for the hybrid concept build.
-document.querySelectorAll('.nav .tab').forEach(tab=>tab.addEventListener('click',()=>{
-  document.querySelectorAll('.nav .tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active');
+// Platform navigation: each tab opens a real workspace view rendered over the map area.
+// "Mission Ctrl" hides the overlay and returns to the default dashboard.
+let wsCharts=[];
+function destroyWsCharts(){wsCharts.forEach(c=>{try{c.destroy()}catch(e){}});wsCharts=[]}
+function showWorkspace(name){
+  const ws=document.getElementById('workspace');
+  destroyWsCharts();
+  if(!name){ws.classList.remove('show');ws.querySelector('#wsBody').innerHTML='';return}
+  const b=document.getElementById('wsBody');
+  document.getElementById('wsTitle').textContent=name+' Workspace';
+  const subtitles={
+    'GIS':'Geospatial reference — objects, coordinates and coverage of the North American domain.',
+    'Simulation':'Scenario playback state, per-object motion and intensity trends.',
+    'Pulse Lab':'Pulse-source inventory, exposure ranking and per-storm coupling.',
+    'Analytics':'Expanded graphs for intensity, wind, pressure and pulse exposure.',
+    'Scenarios':'Named simulation scenarios — status, contents and quick actions.'
+  };
+  document.getElementById('wsSubtitle').textContent=subtitles[name]||'';
+  b.innerHTML='';
+  ws.classList.add('show');
+  ({'GIS':renderGIS,'Simulation':renderSimulation,'Pulse Lab':renderPulseLab,'Analytics':renderAnalytics,'Scenarios':renderScenarios}[name]||(()=>{}))(b);
+}
+function el(html){const d=document.createElement('div');d.innerHTML=html;return d.firstElementChild}
+function addChart(canvas,config){const c=new Chart(canvas,config);wsCharts.push(c);return c}
+const AXIS={ticks:{color:'#d8eaf2'},grid:{color:'rgba(255,255,255,.10)'}};
+
+function renderGIS(b){
+  const rows=[...storms.map(s=>[s.id,s.type,s.cat,s.lat.toFixed(1),s.lng.toFixed(1),s.heading,s.wind+' mph']),
+    ...pulses.map(p=>[p.id,'Pulse',p.power,p.lat.toFixed(1),p.lng.toFixed(1),'—',p.impact+'% impact'])];
+  b.appendChild(el(`<div class="ws-kpi">
+    <div class="kpi"><span>Tracked Objects</span><b>${storms.length+pulses.length}</b></div>
+    <div class="kpi"><span>Storms</span><b>${storms.length}</b></div>
+    <div class="kpi"><span>Pulse Sources</span><b>${pulses.length}</b></div>
+    <div class="kpi"><span>Domain</span><b style="font-size:15px">6°–61° N · 130°–50° W</b></div></div>`));
+  const card=el(`<div class="ws-card"><h4>Object Registry (click a row to focus on the map)</h4></div>`);
+  const table=el(`<table class="ws-table"><thead><tr><th>ID</th><th>Type</th><th>Class</th><th>Lat</th><th>Lng</th><th>Heading</th><th>Metric</th></tr></thead><tbody></tbody></table>`);
+  const tb=table.querySelector('tbody');
+  rows.forEach(r=>{const tr=document.createElement('tr');tr.style.cursor='pointer';tr.innerHTML=r.map(c=>`<td>${c}</td>`).join('');tr.onclick=()=>{showWorkspace(null);document.querySelector('.nav .tab').click();map.setView([+r[3],+r[4]],5)};tb.appendChild(tr)});
+  card.appendChild(table);b.appendChild(card);
+}
+
+function renderSimulation(b){
+  b.appendChild(el(`<div class="ws-kpi">
+    <div class="kpi"><span>Scenario</span><b style="font-size:16px">${scenarioName.textContent}</b></div>
+    <div class="kpi"><span>Playback</span><b>${timeText(missionTime)} / 06:00</b></div>
+    <div class="kpi"><span>Speed</span><b>${speed.toFixed(1)}x</b></div>
+    <div class="kpi"><span>State</span><b style="font-size:16px">${playing?(paused?'Paused':'Running'):'Stopped'}</b></div></div>`));
+  const grid=el(`<div class="ws-grid ws-two"></div>`);
+  const c1=el(`<div class="ws-card"><h4>Storm Intensity</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  const c2=el(`<div class="ws-card"><h4>Forward Speed (mph)</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  grid.appendChild(c1);grid.appendChild(c2);b.appendChild(grid);
+  addChart(c1.querySelector('canvas'),{type:'bar',data:{labels:storms.map(s=>s.id),datasets:[{label:'Intensity %',data:storms.map(s=>Math.round(s.intensity*100)),backgroundColor:storms.map(s=>s.color)}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:AXIS,y:{...AXIS,min:0,max:100}}}});
+  addChart(c2.querySelector('canvas'),{type:'bar',data:{labels:storms.map(s=>s.id),datasets:[{label:'Speed',data:storms.map(s=>s.speed),backgroundColor:'rgba(55,224,122,.7)',borderColor:'#37e07a',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:AXIS,y:{...AXIS,min:0}}}});
+}
+
+function renderPulseLab(b){
+  const ranked=[...pulses].sort((a,p)=>p.impact-a.impact);
+  b.appendChild(el(`<div class="ws-kpi">
+    <div class="kpi"><span>Pulse Sources</span><b>${pulses.length}</b></div>
+    <div class="kpi"><span>Peak Impact</span><b>${Math.max(...pulses.map(p=>p.impact))}%</b></div>
+    <div class="kpi"><span>Avg Impact</span><b>${Math.round(pulses.reduce((a,p)=>a+p.impact,0)/pulses.length)}%</b></div>
+    <div class="kpi"><span>High-power</span><b>${pulses.filter(p=>p.power==='High').length}</b></div></div>`));
+  const grid=el(`<div class="ws-grid ws-two"></div>`);
+  const c1=el(`<div class="ws-card"><h4>Impact by Source</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  const c2=el(`<div class="ws-card"><h4>Exposure Ranking</h4></div>`);
+  const table=el(`<table class="ws-table"><thead><tr><th>Rank</th><th>Pulse</th><th>Power</th><th>Impact</th></tr></thead><tbody></tbody></table>`);
+  ranked.forEach((p,i)=>table.querySelector('tbody').appendChild(el(`<tr><td>${i+1}</td><td><b>${p.id}</b></td><td>${p.power}</td><td>${p.impact}%</td></tr>`)));
+  c2.appendChild(table);grid.appendChild(c1);grid.appendChild(c2);b.appendChild(grid);
+  addChart(c1.querySelector('canvas'),{type:'bar',data:{labels:pulses.map(p=>p.id),datasets:[{data:pulses.map(p=>p.impact),backgroundColor:'rgba(255,214,74,.72)',borderColor:'#ffd64a',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:AXIS,y:{...AXIS,min:0,max:100}}}});
+}
+
+function renderAnalytics(b){
+  const grid=el(`<div class="ws-grid ws-two"></div>`);
+  const c1=el(`<div class="ws-card"><h4>Wind Speed (mph)</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  const c2=el(`<div class="ws-card"><h4>Pulse Exposure (%)</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  const c3=el(`<div class="ws-card"><h4>Wind vs Pulse Exposure</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  const c4=el(`<div class="ws-card"><h4>Hurricane Pressure (mb)</h4><div class="ws-chart"><canvas></canvas></div></div>`);
+  [c1,c2,c3,c4].forEach(c=>grid.appendChild(c));b.appendChild(grid);
+  addChart(c1.querySelector('canvas'),{type:'bar',data:{labels:storms.map(s=>s.id),datasets:[{data:storms.map(s=>s.wind),backgroundColor:storms.map(s=>s.color)}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:AXIS,y:{...AXIS,min:0}}}});
+  addChart(c2.querySelector('canvas'),{type:'bar',data:{labels:storms.map(s=>s.id),datasets:[{data:storms.map(s=>Math.round(s.pulse)),backgroundColor:'rgba(166,108,255,.7)',borderColor:'#a66cff',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:AXIS,y:{...AXIS,min:0,max:100}}}});
+  addChart(c3.querySelector('canvas'),{type:'scatter',data:{datasets:[{label:'Storms',data:storms.map(s=>({x:s.wind,y:Math.round(s.pulse)})),backgroundColor:storms.map(s=>s.color),pointRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{...AXIS,title:{display:true,text:'Wind (mph)',color:'#d8eaf2'}},y:{...AXIS,min:0,max:100,title:{display:true,text:'Pulse %',color:'#d8eaf2'}}}}});
+  const hur=storms.filter(s=>s.pressure);
+  addChart(c4.querySelector('canvas'),{type:'bar',data:{labels:hur.map(s=>s.id),datasets:[{data:hur.map(s=>s.pressure),backgroundColor:'rgba(32,191,255,.7)',borderColor:'#20bfff',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:AXIS,y:{...AXIS,min:900}}}});
+}
+
+function renderScenarios(b){
+  const list=[...scenarioButtons.querySelectorAll('button')].map(x=>x.textContent.trim());
+  const active=scenarioName.textContent.trim();
+  b.appendChild(el(`<div class="ws-kpi">
+    <div class="kpi"><span>Scenarios</span><b>${list.length}</b></div>
+    <div class="kpi"><span>Active</span><b style="font-size:16px">${active}</b></div>
+    <div class="kpi"><span>Storms Captured</span><b>${storms.length}</b></div>
+    <div class="kpi"><span>Pulses Captured</span><b>${pulses.length}</b></div></div>`));
+  const grid=el(`<div class="ws-grid ws-cards"></div>`);
+  list.forEach(name=>{const card=el(`<div class="ws-card"><h4>${name}</h4><p style="color:var(--muted);font-size:12px;margin:0 0 12px">${name===active?'Currently active scenario.':'Saved scenario, ready to load.'}</p></div>`);const btn=el(`<button class="btn" style="width:100%">${name===active?'Active':'Load Scenario'}</button>`);btn.onclick=()=>{const target=[...scenarioButtons.querySelectorAll('button')].find(x=>x.textContent.trim()===name);if(target)target.click();showWorkspace('Scenarios')};card.appendChild(btn);grid.appendChild(card)});
+  b.appendChild(grid);
+}
+
+document.getElementById('wsClose').onclick=()=>document.querySelector('.nav .tab').click();
+const navTabs=[...document.querySelectorAll('.nav .tab')];
+function activateTab(tab){
+  navTabs.forEach(t=>{t.classList.remove('active');t.setAttribute('aria-selected','false');t.setAttribute('tabindex','-1')});
+  tab.classList.add('active');tab.setAttribute('aria-selected','true');tab.setAttribute('tabindex','0');
   const name=tab.textContent.trim();
-  if(name==='Mission Ctrl'){document.getElementById('modal').classList.remove('open');return;}
-  const copy={
-    'GIS':'Full-map GIS workspace with satellite, radar, wind, borders, storm tracks and pulse overlays.',
-    'Simulation':'Scenario playback workspace for storm motion, intensity trends and hypothetical pulse-field visualization.',
-    'Pulse Lab':'Research workspace for pulse-source placement, radius, exposure and scenario comparison.',
-    'Analytics':'Expanded graph workspace for intensity, wind, pressure, exposure and trajectory comparisons.',
-    'Scenarios':'Save, duplicate and compare named simulation scenarios while keeping observed and hypothetical layers separate.'
-  }[name]||'WARP workspace';
-  showModal(name+' Workspace',`<div class="note">${copy}</div><div class="detail-row"><span>Build mode</span><b>Hybrid concept</b></div><div class="detail-row"><span>Visual standard</span><b>Graph-heavy / high-color</b></div>`,520,130);
-}));
+  if(document.getElementById('modal').classList.contains('show'))closeModal();
+  if(name==='Mission Ctrl'){showWorkspace(null);setTimeout(()=>map.invalidateSize(),60);return;}
+  showWorkspace(name);
+}
+// Nav tabs as an accessible tablist: roles, roving tabindex, arrow-key navigation, Enter/Space activation.
+navTabs.forEach((tab,i)=>{
+  tab.setAttribute('role','tab');
+  tab.setAttribute('aria-selected',tab.classList.contains('active')?'true':'false');
+  tab.setAttribute('tabindex',tab.classList.contains('active')?'0':'-1');
+  tab.addEventListener('click',()=>activateTab(tab));
+  tab.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();activateTab(tab);return}
+    let ni=null;
+    if(e.key==='ArrowRight')ni=(i+1)%navTabs.length;
+    else if(e.key==='ArrowLeft')ni=(i-1+navTabs.length)%navTabs.length;
+    else if(e.key==='Home')ni=0;
+    else if(e.key==='End')ni=navTabs.length-1;
+    if(ni!==null){e.preventDefault();navTabs[ni].focus();navTabs[ni].setAttribute('tabindex','0');tab.setAttribute('tabindex','-1')}
+  });
+});
+document.querySelector('.nav').setAttribute('role','tablist');
+// Footer mode buttons: expose as buttons and support keyboard activation.
+document.querySelectorAll('.mode-strip .mode').forEach(mode=>{
+  mode.setAttribute('role','button');
+  mode.setAttribute('tabindex','0');
+  mode.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();mode.click()}});
+});
 
 setInterval(()=>{const d=new Date(Date.UTC(2025,4,20,14,35,22+Math.floor(performance.now()/1000)));simClock.textContent=d.toISOString().replace('T',' ').slice(11,19)+' UTC'},1000);
 </script>
