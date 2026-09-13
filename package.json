@@ -1,0 +1,13 @@
+{
+  "name": "warp-mission-control",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WARP Mission Control — weather anomalies research platform (concept).",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

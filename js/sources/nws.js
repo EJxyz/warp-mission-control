@@ -23,7 +23,7 @@ import { makeStorm, Provenance } from '../model.js';
 const BASE = 'https://api.weather.gov';
 
 // Alert `event` strings we treat as storm systems worth mapping.
-const STORM_EVENTS = [
+export const STORM_EVENTS = [
   'Tornado Warning', 'Tornado Watch',
   'Severe Thunderstorm Warning', 'Severe Thunderstorm Watch',
   'Hurricane Warning', 'Hurricane Watch',
@@ -42,7 +42,7 @@ const SEVERITY = {
 };
 
 // Classify the coarse storm "type" from the event text (for icon selection).
-function classifyType(event = '') {
+export function classifyType(event = '') {
   if (/Hurricane|Tropical|Surge/i.test(event)) return 'Hurricane';
   if (/Tornado/i.test(event)) return 'Tornado';
   return 'Storm';
@@ -51,7 +51,7 @@ function classifyType(event = '') {
 // Compute a representative [lat, lng] from GeoJSON geometry (mean of the first
 // ring's vertices). NWS coordinates are [lng, lat]. Handles Polygon, MultiPolygon
 // and Point; returns null for anything unmappable (e.g. zone-only alerts).
-function centroid(geometry) {
+export function centroid(geometry) {
   if (!geometry) return null;
   if (geometry.type === 'Point' && Array.isArray(geometry.coordinates)) {
     const [lng, lat] = geometry.coordinates;
@@ -73,7 +73,7 @@ function centroid(geometry) {
   return n ? [sy / n, sx / n] : null;
 }
 
-function adaptAlert(feature, i) {
+export function adaptAlert(feature, i) {
   const p = feature.properties || {};
   if (!STORM_EVENTS.includes(p.event)) return null;
   const pos = centroid(feature.geometry);

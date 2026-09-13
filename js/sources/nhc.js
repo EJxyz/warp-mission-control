@@ -37,7 +37,7 @@ const CLASS = {
 const KT_TO_MPH = 1.15078;
 
 // Saffir–Simpson-ish category label + color from sustained wind (mph).
-function categorize(classification, mph) {
+export function categorize(classification, mph) {
   if (classification === 'TD') return { cat: 'TD', color: '#38e0ff' };
   if (classification === 'TS') return { cat: 'TS', color: '#37e07a' };
   if (mph >= 157) return { cat: 'CAT 5', color: '#ff2b2b' };
@@ -51,7 +51,7 @@ function categorize(classification, mph) {
 // Project an approximate forward track from a motion vector.
 // dir = compass degrees the storm is moving TOWARD; speed in knots.
 // Returns an array of [lat, lng] points at +hours intervals.
-function synthTrack(lat, lng, dirDeg, speedKt, steps = 4, hoursPerStep = 12) {
+export function synthTrack(lat, lng, dirDeg, speedKt, steps = 4, hoursPerStep = 12) {
   if (!Number.isFinite(dirDeg) || !Number.isFinite(speedKt) || speedKt <= 0) return [];
   const rad = dirDeg * Math.PI / 180;
   // Displacement per step in nautical miles → degrees.
@@ -66,7 +66,7 @@ function synthTrack(lat, lng, dirDeg, speedKt, steps = 4, hoursPerStep = 12) {
   return pts;
 }
 
-function adaptStorm(s) {
+export function adaptStorm(s) {
   const lat = s.latitudeNumeric, lng = s.longitudeNumeric;
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
   const kt = parseFloat(s.intensity);
