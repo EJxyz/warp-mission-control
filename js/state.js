@@ -23,3 +23,20 @@ export const refs = {
   intensityChart: null,
   pulseChart: null
 };
+
+// Normalized application data, populated by datasource.load() at startup.
+// Consumers read storms/emps from here rather than importing raw data.js arrays,
+// so the app is decoupled from the active source (mock / NWS / both).
+// `storms` and `emps` are arrays of normalized entities (see model.js);
+// they are replaced (reassigned) on reload, so read `appData.storms` freshly
+// rather than caching the array reference.
+export const appData = {
+  storms: [],
+  emps: [],
+  meta: { mode: 'mock', source: 'mock', degraded: false }
+};
+
+// Active data source mode. Change + reload to switch between concept and live data.
+export const config = {
+  mode: 'mock' // 'mock' | 'nws' | 'both'
+};

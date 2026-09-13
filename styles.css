@@ -32,3 +32,17 @@
 .storm-card:nth-child(3n+1){background:linear-gradient(180deg,rgba(7,34,53,.96),rgba(3,14,23,.96))}
 .storm-card:nth-child(3n+2){background:linear-gradient(180deg,rgba(21,13,49,.94),rgba(3,14,23,.96))}
 .storm-card:nth-child(3n+3){background:linear-gradient(180deg,rgba(24,28,20,.94),rgba(3,14,23,.96))}
+
+
+/* --- Data provenance (observed / forecast / simulated) indicators --- */
+/* Small "SIM" tag overlaid on simulated map markers. */
+.marker-prov{position:absolute;margin-left:-4px;margin-top:-30px;font-size:9px;font-weight:950;letter-spacing:.5px;color:#0a0512;background:var(--purple);padding:1px 4px;border-radius:3px;box-shadow:0 0 6px rgba(166,108,255,.7)}
+/* Inline chip next to a storm id in the list. */
+.prov-chip{display:inline-block;font-size:9px;font-weight:950;letter-spacing:.5px;color:#04120a;background:var(--pc,#a8becb);padding:1px 5px;border-radius:9px;vertical-align:middle;margin-left:4px}
+/* Banner at the top of a detail modal. */
+.prov-banner{margin:0 0 10px;padding:6px 9px;border:1px solid var(--pc,#a8becb);border-left-width:4px;border-radius:5px;background:rgba(255,255,255,.04);color:#fff;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+/* Simulated storm cards get a dashed accent so they read as non-real at a glance. */
+.storm-card.sim{border-style:dashed}
+.storm-card.sim:before{background:var(--purple);box-shadow:0 0 12px var(--purple)}
+/* Empty-state note used in panels when a data source returns nothing. */
+.empty-note{padding:14px 10px;color:var(--muted);font-size:12px;text-align:center;border:1px dashed var(--line2);border-radius:7px;margin:6px}

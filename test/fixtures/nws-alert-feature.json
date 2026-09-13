@@ -1,0 +1,44 @@
+{
+  "note": "Real NWS /alerts/active feature captured 2026-09-09 (Webb County, TX Flood Advisory). Used to verify the nws.js adapter against a real response shape.",
+  "feature": {
+    "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.e600c9143cc83029b522f2c61c46086116aa23ce.001.1",
+    "type": "Feature",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-99.33, 27.55],
+          [-99.33, 27.58],
+          [-99.32, 27.58],
+          [-99.25, 27.59],
+          [-99.18, 27.59],
+          [-99.13, 27.55],
+          [-99.13, 27.52],
+          [-99.18, 27.49],
+          [-99.28, 27.51],
+          [-99.33, 27.55]
+        ]
+      ]
+    },
+    "properties": {
+      "id": "urn:oid:2.49.0.1.840.0.e600c9143cc83029b522f2c61c46086116aa23ce.001.1",
+      "areaDesc": "Webb, TX",
+      "sent": "2026-09-09T18:58:00-05:00",
+      "effective": "2026-09-09T18:58:00-05:00",
+      "onset": "2026-09-09T18:58:00-05:00",
+      "expires": "2026-09-09T22:00:00-05:00",
+      "ends": "2026-09-09T22:00:00-05:00",
+      "status": "Actual",
+      "messageType": "Alert",
+      "category": "Met",
+      "severity": "Minor",
+      "certainty": "Likely",
+      "urgency": "Expected",
+      "event": "Flood Advisory",
+      "sender": "w-nws.webmaster@noaa.gov",
+      "senderName": "NWS Corpus Christi TX",
+      "headline": "Flood Advisory issued September 9 at 6:58PM CDT until September 9 at 10:00PM CDT by NWS Corpus Christi TX",
+      "response": "Avoid"
+    }
+  }
+}

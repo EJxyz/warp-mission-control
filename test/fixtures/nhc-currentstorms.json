@@ -1,0 +1,43 @@
+{
+  "note": "Real NHC CurrentStorms.json captured 2026-09-09 (Fourteen-E, Lowell), trimmed to the fields nhc.js reads. Used to verify the adapter against a real response.",
+  "data": {
+    "activeStorms": [
+      {
+        "id": "ep142026",
+        "binNumber": "EP4",
+        "name": "Fourteen-E",
+        "classification": "TD",
+        "intensity": "30",
+        "pressure": "1006",
+        "latitude": "15.7N",
+        "longitude": "115.2W",
+        "latitudeNumeric": 15.7,
+        "longitudeNumeric": -115.2,
+        "movementDir": 285,
+        "movementSpeed": 9,
+        "lastUpdate": "2026-09-09T21:00:00.000Z",
+        "publicAdvisory": { "advNum": "001", "url": "https://www.nhc.noaa.gov/text/MIATCPEP4.shtml" },
+        "forecastTrack": { "kmzFile": "https://www.nhc.noaa.gov/storm_graphics/api/EP142026_001adv_TRACK.kmz" },
+        "trackCone": { "kmzFile": "https://www.nhc.noaa.gov/storm_graphics/api/EP142026_001adv_CONE.kmz" }
+      },
+      {
+        "id": "ep122026",
+        "binNumber": "CP4",
+        "name": "Lowell",
+        "classification": "TS",
+        "intensity": "50",
+        "pressure": "987",
+        "latitude": "28.9N",
+        "longitude": "163.7W",
+        "latitudeNumeric": 28.9,
+        "longitudeNumeric": -163.7,
+        "movementDir": 310,
+        "movementSpeed": 14,
+        "lastUpdate": "2026-09-09T21:00:00.000Z",
+        "publicAdvisory": { "advNum": "055", "url": "https://www.nhc.noaa.gov/text/HFOTCPCP4.shtml" },
+        "forecastTrack": { "kmzFile": "https://www.nhc.noaa.gov/storm_graphics/api/EP122026_055adv_TRACK.kmz" },
+        "trackCone": { "kmzFile": "https://www.nhc.noaa.gov/storm_graphics/api/EP122026_055adv_CONE.kmz" }
+      }
+    ]
+  }
+}
