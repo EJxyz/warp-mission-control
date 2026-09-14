@@ -101,8 +101,13 @@ export function adaptAlert(feature, i) {
     ends: p.ends,
     senderName: p.senderName,
     response: p.response,
+    instruction: p.instruction,
     intensity: sev.intensity,
-    color: sev.color
+    color: sev.color,
+    // The real warning-area polygon (GeoJSON geometry, [lng,lat] rings). Drawn on
+    // the map and used for the population-in-harm's-way estimate. The centroid
+    // (lat/lng above) is kept only as a label/marker anchor.
+    alertGeometry: feature.geometry
     // NOTE: no synthetic `wind`/`pressure`/`track`/`proj` — we do not invent
     // values for real data. UI must tolerate these being undefined.
   });

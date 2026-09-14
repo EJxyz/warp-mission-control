@@ -2,6 +2,13 @@
 
 import { showModal } from './modal.js';
 import { PROVENANCE_META, isReal } from './model.js';
+import { estimatePopulation, isPlaceholderSource } from './population.js';
+
+// Format a people count with thousands separators.
+function fmtPeople(n) {
+  if (n === null || n === undefined) return 'unavailable';
+  return n.toLocaleString('en-US');
+}
 
 const dash = (v, suffix = '') => (v === undefined || v === null || v === '') ? '—' : v + suffix;
 
@@ -32,9 +39,36 @@ export function stormDetails(s) {
   if (s.trackApprox) {
     note += `<div class="note" style="border-color:rgba(56,224,255,.5)">⚠ Forward track shown is <b>approximate</b> — derived from the reported motion vector, <b>not</b> the official NHC forecast cone.</div>`;
   }
+
+  // People-in-harm's-way row: only for real alerts that carry a warning polygon.
+  // Rendered async — show a placeholder, then patch in the estimate.
+  const hasArea = !!s.alertGeometry;
+  const popRow = hasArea
+    ? `<div class="detail-row"><span>People in warning area</span><b id="popEstimate">estimating…</b></div>`
+    : '';
+
   showModal(`${s.id} ${dash(s.type)} Inspector`,
-    provBanner(s) + rows.map(([k, v]) => `<div class="detail-row"><span>${k}</span><b>${v}</b></div>`).join('') + note,
+    provBanner(s) + rows.map(([k, v]) => `<div class="detail-row"><span>${k}</span><b>${v}</b></div>`).join('') + popRow + note,
     300, 118);
+
+  if (hasArea) {
+    estimatePopulation(s.alertGeometry).then(est => {
+      const el = document.getElementById('popEstimate');
+      if (!el) return; // modal may have been closed/replaced
+      if (!est || est.people === null) { el.textContent = 'unavailable'; return; }
+      s._popEstimate = est; // cache for the list
+      el.innerHTML = `≈ ${fmtPeople(est.people)} <span style="color:var(--muted);font-weight:600">(est.)</span>`;
+      // Append an honest caveat about the estimate method.
+      const body = document.getElementById('modalBody');
+      if (body && est.approximate && !body.querySelector('.pop-caveat')) {
+        const c = document.createElement('div');
+        c.className = 'note pop-caveat';
+        c.style.borderColor = 'rgba(255,158,47,.55)';
+        c.innerHTML = `⚠ People estimate is <b>approximate${isPlaceholderSource() ? ' (placeholder)' : ''}</b>${est.areaKm2 ? ` — warning area ≈ ${est.areaKm2.toLocaleString('en-US')} km²` : ''}. ${est.note || ''} Always defer to official NWS guidance.`;
+        body.appendChild(c);
+      }
+    });
+  }
 }
 
 export function pulseDetails(p) {

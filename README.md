@@ -98,6 +98,26 @@ US-only, so storms outside US jurisdiction won't appear in `nws`/`both` modes.
 - ⏱️ **Timeline playback** with play/pause/step and adjustable simulation speed
 - 🎛️ **Layer manager**, **scenario manager**, and **pulse manager** side panels
 - 🪟 Modal workspaces for GIS, Simulation, Pulse Lab, Analytics, Scenarios, 3D viewer, and reports
+- 🟧 **Real NWS warning-area polygons** drawn on the map (the actual alert geometry, not a centroid dot)
+- 👥 **People-in-harm's-way estimate** per live alert — the population inside the warning polygon
+
+### People-in-harm's-way (life-safety)
+
+For each live NWS alert, WARP draws the **real warning-area polygon** and estimates the
+**number of people inside it** — the signal that turns "a warning polygon" into "≈ N people
+at risk here."
+
+> ⚠️ **The estimate is approximate and clearly labeled as such.** The current estimator
+> ([`js/population.js`](js/population.js)) is a documented **placeholder** — polygon area ×
+> average US population density — so it is *order-of-magnitude only* and is not spatially
+> aware. It is built behind a pluggable interface (`setPopulationSource`) so a real gridded
+> ([WorldPop](https://www.worldpop.org/) / [NASA SEDAC GPW](https://sedac.ciesin.columbia.edu/))
+> or census-intersection source can replace it with no UI changes. Numbers are shown as
+> "≈ N (est.)" and must never be treated as authoritative counts.
+
+WARP is a **situational-awareness aid, not an official warning system** — a persistent
+in-app disclaimer states this, links to the [National Weather Service](https://www.weather.gov/),
+and reminds users that the absence of an alert here does not mean an area is safe.
 
 ## Running it
 

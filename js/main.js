@@ -88,7 +88,17 @@ async function boot() {
   // 7. Navigation (tabs, mode strip, scenario buttons).
   initNav();
 
-  // 8. Simulation clock ticker.
+  // 8. Life-safety disclaimer: shown by default; dismissal is remembered, but it
+  // re-appears each new browser session (sessionStorage, not permanent) so it is
+  // never permanently silenced.
+  const disc = document.getElementById('safetyDisclaimer');
+  const dismiss = document.getElementById('safetyDismiss');
+  if (disc && dismiss) {
+    if (sessionStorage.getItem('warpSafetyDismissed') === '1') disc.classList.add('hidden');
+    dismiss.addEventListener('click', () => { disc.classList.add('hidden'); try { sessionStorage.setItem('warpSafetyDismissed', '1'); } catch (e) {} });
+  }
+
+  // 9. Simulation clock ticker.
   setInterval(() => {
     const d = new Date(Date.UTC(2025, 4, 20, 14, 35, 22 + Math.floor(performance.now() / 1000)));
     document.getElementById('simClock').textContent = d.toISOString().replace('T', ' ').slice(11, 19) + ' UTC';

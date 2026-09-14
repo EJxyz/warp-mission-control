@@ -75,6 +75,19 @@ export function drawObjects() {
     } else {
       s._lead = null; s._cone = null;
     }
+    // Real NWS alert area: draw the actual warning polygon (the true area at
+    // risk), not just the centroid. Grouped with cones so the layer toggle governs it.
+    if (s.alertGeometry) {
+      try {
+        s._area = L.geoJSON(s.alertGeometry, {
+          style: { color: s.color || '#ff9e2f', weight: 2, fillColor: s.color || '#ff9e2f', fillOpacity: .14, opacity: .8 }
+        }).addTo(map);
+        s._area.on('click', () => { sim.selected = s.id; renderStormList(); stormDetails(s); });
+        layers.cones.push(s._area);
+      } catch (e) { s._area = null; }
+    } else {
+      s._area = null;
+    }
     const m = L.marker([s.lat, s.lng], { icon: makeStormIcon(s), draggable: editable })
       .on('click', () => { sim.selected = s.id; renderStormList(); stormDetails(s); })
       .addTo(map);
