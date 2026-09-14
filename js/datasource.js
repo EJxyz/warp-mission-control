@@ -3,10 +3,13 @@
 //
 // Modes:
 //   'mock' — offline concept data only (all simulated)
-//   'nws'  — live real weather: NWS alerts + NHC tropical cyclones (observed/forecast).
-//            EMP sources are omitted (they are simulated-only). Falls back to mock
-//            if BOTH live sources fail; tolerates one failing.
-//   'both' — live real weather (NWS + NHC) storms + mock EMP sources (simulated).
+//   'nws'  — live real weather: NWS alerts (observed/forecast). NHC tropical
+//            cyclones are PARKED by default because NHC's CurrentStorms.json is
+//            served WITHOUT CORS headers and cannot be fetched from a browser on
+//            a static site (verified). NHC is included only when a CORS-enabled
+//            proxy URL is supplied via opts.nhcProxyUrl. EMP sources are omitted
+//            (simulated-only). Falls back to mock if the live source(s) fail.
+//   'both' — live real weather storms + mock EMP sources (simulated).
 
 import * as mock from './sources/mock.js';
 import * as nws from './sources/nws.js';
@@ -22,31 +25,51 @@ async function loadMock() {
   return { storms: r.storms, emps: r.emps, meta: { ...r.meta, mode: 'mock', degraded: false } };
 }
 
-// Load the live real-weather sources (NWS alerts + NHC cyclones) in parallel.
-// Returns merged storms plus a per-source status so callers can report partial
-// failures. Throws only if BOTH sources fail.
-async function loadLive(opts) {
-  const [nwsR, nhcR] = await Promise.allSettled([nws.load(opts), nhc.load(opts)]);
+// Load the live real-weather sources. NWS is always attempted. NHC is attempted
+// ONLY when a proxy URL is provided (opts.nhcProxyUrl), because NHC is CORS-blocked
+// in the browser; without a proxy it is reported as `parked` (a deliberate state,
+// not a failure). Returns merged storms + per-source status. Throws only if every
+// ATTEMPTED live source fails.
+async function loadLive(opts = {}) {
+  const useNhc = !!opts.nhcProxyUrl;
+  const jobs = [nws.load(opts)];
+  if (useNhc) jobs.push(nhc.load({ ...opts, url: opts.nhcProxyUrl }));
+
+  const results = await Promise.allSettled(jobs);
   const storms = [];
   const status = {};
-  let okCount = 0;
+  let attempted = 0, okCount = 0;
 
+  // NWS (always attempted, index 0)
+  attempted++;
+  const nwsR = results[0];
   if (nwsR.status === 'fulfilled') { storms.push(...nwsR.value.storms); status.nws = nwsR.value.meta; okCount++; }
   else status.nws = { error: String(nwsR.reason && nwsR.reason.message || nwsR.reason) };
 
-  if (nhcR.status === 'fulfilled') { storms.push(...nhcR.value.storms); status.nhc = nhcR.value.meta; okCount++; }
-  else status.nhc = { error: String(nhcR.reason && nhcR.reason.message || nhcR.reason) };
+  // NHC (attempted only with a proxy; otherwise parked)
+  if (useNhc) {
+    attempted++;
+    const nhcR = results[1];
+    if (nhcR.status === 'fulfilled') { storms.push(...nhcR.value.storms); status.nhc = nhcR.value.meta; okCount++; }
+    else status.nhc = { error: String(nhcR.reason && nhcR.reason.message || nhcR.reason) };
+  } else {
+    status.nhc = { parked: true, reason: 'NHC CurrentStorms.json is CORS-blocked in browsers; supply a proxy (config.nhcProxyUrl) to enable.' };
+  }
 
-  if (okCount === 0) throw new Error(`live sources failed (nws: ${status.nws.error}; nhc: ${status.nhc.error})`);
+  if (okCount === 0) throw new Error(`live source(s) failed (nws: ${status.nws.error || 'n/a'})`);
 
   return {
     storms,
-    partial: okCount < 2, // one source failed but we still have data
+    // "partial" = fewer live sources succeeded than were attempted (a real failure),
+    // NOT the deliberately-parked NHC.
+    partial: okCount < attempted,
     meta: {
-      source: 'NWS+NHC',
+      source: useNhc ? 'NWS+NHC' : 'NWS',
       fetchedAt: new Date().toISOString(),
       sources: status,
-      note: 'Live real weather: NWS alerts + NHC cyclones. NHC forward tracks are approximate (motion-derived).'
+      note: useNhc
+        ? 'Live real weather: NWS alerts + NHC cyclones (via proxy). NHC forward tracks are approximate (motion-derived).'
+        : 'Live NWS alerts (US only). NHC tropical cyclones are parked (require a CORS proxy).'
     }
   };
 }

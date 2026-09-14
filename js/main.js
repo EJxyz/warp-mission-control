@@ -9,26 +9,59 @@ import { renderStormList, updateSummary, renderPulses, renderThumbs } from './pa
 import { initTimeline } from './timeline.js';
 import { initNav } from './nav.js';
 
-// Surface a non-blocking banner when data is degraded/mocked so the user always
-// knows whether they're looking at live or fallback data.
+// Ensure the on-screen source-status notice element exists (created once).
+function statusEl() {
+  let el = document.getElementById('sourceStatus');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'sourceStatus';
+    el.className = 'source-status';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+// Surface data-source status BOTH in the Mode telemetry and as an on-screen
+// notice, so users are never misled about what is (and isn't) being shown —
+// e.g. that tropical cyclones are parked, or that a live source failed.
 function setSourceNotice(meta) {
-  const label = meta.mode === 'nws' ? 'Live NWS+NHC' : meta.mode === 'both' ? 'NWS+NHC + Concept EMP' : 'Concept (mock)';
   const modeEl = document.querySelector('.telemetry .metric:last-child b');
   if (modeEl) {
     modeEl.textContent = meta.degraded ? 'Fallback' : (meta.mode === 'mock' ? 'Concept' : (meta.partial ? 'Live (partial)' : 'Live'));
   }
-  if (meta.degraded) {
-    console.warn(`Data source "${meta.mode}" degraded — using fallback. Reason: ${meta.error || 'unknown'}`);
-  } else if (meta.partial && meta.sources) {
-    const down = Object.entries(meta.sources).filter(([, v]) => v && v.error).map(([k, v]) => `${k}: ${v.error}`);
-    console.warn(`WARP live data partial — one source unavailable. ${down.join('; ')}`);
+
+  const el = statusEl();
+  const src = meta.sources || {};
+  let tone = 'ok', msg = '';
+
+  if (meta.mode === 'mock') {
+    tone = 'sim';
+    msg = 'Concept data (simulated) — not real weather.';
+  } else if (meta.degraded) {
+    tone = 'warn';
+    msg = `Live data unavailable — showing concept data. (${meta.error || 'unknown error'})`;
+  } else {
+    const parts = [];
+    if (src.nws && !src.nws.error) parts.push(`NWS alerts: ${src.nws.mappedStorms ?? '?'} storms`);
+    if (src.nws && src.nws.error) { tone = 'warn'; parts.push(`NWS failed (${src.nws.error})`); }
+    if (src.nhc && src.nhc.parked) { tone = tone === 'ok' ? 'info' : tone; parts.push('NHC cyclones parked (needs proxy)'); }
+    else if (src.nhc && src.nhc.error) { tone = 'warn'; parts.push(`NHC failed (${src.nhc.error})`); }
+    else if (src.nhc && !src.nhc.error) parts.push(`NHC cyclones: ${src.nhc.mappedStorms ?? '?'}`);
+    msg = 'Live · ' + (parts.join(' · ') || 'no active storms');
   }
-  console.info(`WARP data source: ${label}`, meta);
+
+  el.textContent = msg;
+  el.dataset.tone = tone;
+
+  // Console mirrors (useful for debugging / power users).
+  if (meta.degraded) console.warn(`WARP data degraded — fallback. Reason: ${meta.error || 'unknown'}`);
+  else if (meta.partial) console.warn('WARP live data partial — a source failed:', src);
+  console.info('WARP data source:', meta.mode, meta);
 }
 
 async function boot() {
   // 1. Load normalized entities from the configured source (never throws).
-  const result = await load(config.mode);
+  const result = await load(config.mode, { nhcProxyUrl: config.nhcProxyUrl });
   appData.storms = result.storms;
   appData.emps = result.emps;
   appData.meta = result.meta;
@@ -66,20 +99,25 @@ boot();
 
 // Expose a tiny console API so users can switch data sources without a rebuild:
 //   WARP.setMode('nws'); WARP.setMode('both'); WARP.setMode('mock');
+//   WARP.setNhcProxy('https://your-proxy/CurrentStorms.json'); // enable NHC cyclones
+async function reload() {
+  const result = await load(config.mode, { nhcProxyUrl: config.nhcProxyUrl });
+  appData.storms = result.storms;
+  appData.emps = result.emps;
+  appData.meta = result.meta;
+  setSourceNotice(result.meta);
+  drawObjects();
+  rebuildCharts();
+  renderStormList();
+  updateSummary();
+  renderPulses();
+  return result.meta;
+}
 window.WARP = {
-  async setMode(mode) {
-    config.mode = mode;
-    const result = await load(mode);
-    appData.storms = result.storms;
-    appData.emps = result.emps;
-    appData.meta = result.meta;
-    setSourceNotice(result.meta);
-    drawObjects();
-    rebuildCharts();
-    renderStormList();
-    updateSummary();
-    renderPulses();
-    return result.meta;
-  },
-  get data() { return appData; }
+  async setMode(mode) { config.mode = mode; return reload(); },
+  // Enable NHC tropical cyclones by pointing at a CORS-enabled proxy (see README).
+  // Pass null to disable again. Re-loads the current mode.
+  async setNhcProxy(url) { config.nhcProxyUrl = url || null; return reload(); },
+  get data() { return appData; },
+  get config() { return config; }
 };

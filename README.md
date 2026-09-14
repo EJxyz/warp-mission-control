@@ -21,31 +21,48 @@ North America.
 
 The app loads through a source abstraction (`js/datasource.js`) with three modes:
 
-| Mode   | Storms                                      | EMP sources        |
-|--------|---------------------------------------------|--------------------|
-| `mock` | built-in concept data (SIM)                 | concept data (SIM) |
-| `nws`  | live **NWS alerts + NHC cyclones** (real)   | none               |
-| `both` | live NWS alerts + NHC cyclones (real)       | concept data (SIM) |
+| Mode   | Storms                                  | EMP sources        |
+|--------|-----------------------------------------|--------------------|
+| `mock` | built-in concept data (SIM)             | concept data (SIM) |
+| `nws`  | live **NWS alerts** (real, US)          | none               |
+| `both` | live NWS alerts (real, US)              | concept data (SIM) |
 
-Live "real weather" comes from two sources, fetched in parallel:
-- **NWS active alerts** ([api.weather.gov](https://www.weather.gov/documentation/services-web-api)) — tornado/severe-thunderstorm/hurricane/etc. alerts, US-only. Warnings are tagged `observed`, watches `forecast`.
-- **NHC active cyclones** ([CurrentStorms.json](https://www.nhc.noaa.gov/CurrentStorms.json)) — live tropical-cyclone position, category, intensity and motion, tagged `observed`.
+Live "real weather" currently comes from **NWS active alerts**
+([api.weather.gov](https://www.weather.gov/documentation/services-web-api)) —
+tornado/severe-thunderstorm/hurricane/etc. alerts, US-only. Warnings are tagged
+`observed`, watches `forecast`. *(Verified working live against the real API.)*
 
-> **Approximate tracks:** NHC's official forecast cone/track are only published as
-> KMZ/shapefile served **without CORS headers**, so a static site can't fetch them in
-> the browser. Instead, each cyclone's **forward track is *synthesized* from its reported
-> motion vector** (`movementDir` + `movementSpeed`) and clearly marked *approximate — not
-> the official NHC cone* (rendered faint/finely-dashed, with a note in the inspector).
-> A real-cone source can slot in later behind the same entity shape (would require a proxy/backend).
+### NHC tropical cyclones — parked (requires a proxy)
 
-If one live source fails the app uses the other (Mode shows `Live (partial)`); if both fail
-it falls back to concept data (`Fallback`).
+The app includes an NHC adapter ([`sources/nhc.js`](js/sources/nhc.js)) that maps
+[CurrentStorms.json](https://www.nhc.noaa.gov/CurrentStorms.json) into live cyclone
+entities, **but it is disabled by default.** Verified in-browser: `nhc.noaa.gov`
+serves `CurrentStorms.json` **without an `Access-Control-Allow-Origin` header**, so a
+browser on a static-site origin (like GitHub Pages) **cannot fetch it** — the request
+fails with a CORS error. (`curl` works because it ignores CORS; only browsers enforce it.)
+
+To enable NHC you must supply a **CORS-enabled proxy** that re-serves the same JSON:
+
+```js
+// point at your proxy (e.g. a Cloudflare Worker), then it loads with the current mode
+WARP.setNhcProxy('https://your-proxy.example/CurrentStorms.json');
+```
+
+> **Approximate tracks:** even via a proxy, NHC's official forecast cone/track are only
+> published as KMZ/shapefile (also without CORS). So each cyclone's forward track is
+> *synthesized* from its reported motion vector (`movementDir` + `movementSpeed`) and
+> clearly marked *approximate — not the official NHC cone* (faint/finely-dashed, with an
+> inspector note). A real-cone source could slot in later behind the same entity shape.
+
+If a live source fails, the app falls back to concept data (Mode shows `Fallback`); when
+NHC is parked the on-screen status notice says so, so missing cyclones are never silently
+implied to be "no storms."
 
 Default is `mock`. Switch at runtime from the browser console (no rebuild):
 
 ```js
-WARP.setMode('nws');   // live NWS alerts (US only)
-WARP.setMode('both');  // live storms + simulated EMP sources
+WARP.setMode('nws');   // live NWS alerts (US only); NHC parked unless a proxy is set
+WARP.setMode('both');  // live NWS alerts + simulated EMP sources
 WARP.setMode('mock');  // concept data
 ```
 

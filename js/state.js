@@ -38,5 +38,9 @@ export const appData = {
 
 // Active data source mode. Change + reload to switch between concept and live data.
 export const config = {
-  mode: 'mock' // 'mock' | 'nws' | 'both'
+  mode: 'mock', // 'mock' | 'nws' | 'both'
+  // NHC (tropical cyclones) is CORS-blocked in browsers, so it is parked by
+  // default. To enable it, set this to a CORS-enabled proxy URL that returns the
+  // same CurrentStorms.json shape (see README). null = NHC disabled.
+  nhcProxyUrl: null
 };

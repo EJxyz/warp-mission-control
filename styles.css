@@ -46,3 +46,12 @@
 .storm-card.sim:before{background:var(--purple);box-shadow:0 0 12px var(--purple)}
 /* Empty-state note used in panels when a data source returns nothing. */
 .empty-note{padding:14px 10px;color:var(--muted);font-size:12px;text-align:center;border:1px dashed var(--line2);border-radius:7px;margin:6px}
+
+
+/* --- On-screen data-source status notice (bottom-left, above the deck) --- */
+.source-status{position:absolute;left:14px;bottom:196px;z-index:640;max-width:340px;padding:7px 11px;border-radius:7px;font-size:11px;font-weight:800;letter-spacing:.2px;line-height:1.35;border:1px solid var(--line);background:rgba(1,8,14,.92);color:#eaf8ff;box-shadow:0 0 18px rgba(0,0,0,.5);pointer-events:none}
+.source-status[data-tone="ok"]{border-color:rgba(55,224,122,.55)}
+.source-status[data-tone="info"]{border-color:rgba(56,224,255,.55)}
+.source-status[data-tone="warn"]{border-color:rgba(255,158,47,.7);color:#ffe1bd}
+.source-status[data-tone="sim"]{border-color:rgba(166,108,255,.6);color:#e9dcff}
+@media(max-width:1320px){.source-status{bottom:auto;top:70px}}
