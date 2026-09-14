@@ -32,11 +32,14 @@ export function renderStormList() {
     div.className = 'storm-card ' + (sim.selected === s.id ? 'active' : '') + (isReal(s.provenance) ? '' : ' sim');
     div.style.setProperty('--accent', color);
     const intensityPct = Math.round((s.intensity || 0) * 100);
-    // Show a cached people-in-area estimate if the inspector has computed one.
+    // Show cached people + facilities exposure if the inspector has computed them.
     const popLine = (s._popEstimate && s._popEstimate.people != null)
       ? `<div class="storm-pop">≈ ${s._popEstimate.people.toLocaleString('en-US')} in warning area <span>(est.)</span></div>`
       : '';
-    div.innerHTML = `<div class="storm-head"><div class="storm-svg" style="color:${color}">${s.type === 'Hurricane' ? hurricaneSvg : tornadoSvg}</div><div><div class="storm-id">${s.id} ${provChip(s)}</div><div class="storm-type">${fmt(s.type)}</div></div><div class="storm-cat">${fmt(s.cat)}</div></div><div class="storm-detail"><span>Wind <b>${fmt(s.wind)}</b></span><span>Exposure <b>${s.pulse !== undefined ? Math.round(s.pulse) + '%' : '—'}</b></span><span>Heading <b>${fmt(s.heading)}</b></span><span>Speed <b>${fmt(s.speed)}</b></span></div><div class="bar"><i style="--v:${intensityPct}%;background:linear-gradient(90deg,${color},var(--green))"></i></div>${popLine}`;
+    const facLine = (s._facilities && s._facilities.summary && s._facilities.summary.total)
+      ? `<div class="storm-fac">🏥 ${s._facilities.summary.total} critical ${s._facilities.summary.total === 1 ? 'facility' : 'facilities'} <span>(${s._facilities.source})</span></div>`
+      : '';
+    div.innerHTML = `<div class="storm-head"><div class="storm-svg" style="color:${color}">${s.type === 'Hurricane' ? hurricaneSvg : tornadoSvg}</div><div><div class="storm-id">${s.id} ${provChip(s)}</div><div class="storm-type">${fmt(s.type)}</div></div><div class="storm-cat">${fmt(s.cat)}</div></div><div class="storm-detail"><span>Wind <b>${fmt(s.wind)}</b></span><span>Exposure <b>${s.pulse !== undefined ? Math.round(s.pulse) + '%' : '—'}</b></span><span>Heading <b>${fmt(s.heading)}</b></span><span>Speed <b>${fmt(s.speed)}</b></span></div><div class="bar"><i style="--v:${intensityPct}%;background:linear-gradient(90deg,${color},var(--green))"></i></div>${popLine}${facLine}`;
     div.onclick = () => { sim.selected = s.id; refs.map.setView([s.lat, s.lng], 5); renderStormList(); stormDetails(s); };
     box.appendChild(div);
   });

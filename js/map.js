@@ -50,7 +50,8 @@ export function drawObjects() {
   layers.tracks.forEach(l => map.removeLayer(l));
   layers.cones.forEach(l => map.removeLayer(l));
   layers.pulses.forEach(l => map.removeLayer(l));
-  layers.markers = []; layers.tracks = []; layers.cones = []; layers.pulses = [];
+  layers.facilities.forEach(l => map.removeLayer(l));
+  layers.markers = []; layers.tracks = []; layers.cones = []; layers.pulses = []; layers.facilities = [];
   appData.storms.forEach(s => {
     // Only simulated storms are user-editable; real observations are locked.
     const editable = !isReal(s.provenance);
@@ -108,6 +109,28 @@ export function drawObjects() {
       .addTo(map);
     p._marker = pm;
     layers.pulses.push(pm);
+  });
+}
+
+// Colors per facility type for the small map dots.
+const FACILITY_COLORS = {
+  hospital: '#ff4b4b', school: '#ffd64a', fire: '#ff9e2f',
+  police: '#38e0ff', shelter: '#37e07a', care: '#a66cff'
+};
+
+// Plot critical-facility markers (from a facilitiesInArea result) on the map.
+// Replaces any previously shown facilities. Called by the inspector.
+export function showFacilities(facilities) {
+  const map = refs.map;
+  layers.facilities.forEach(l => map.removeLayer(l));
+  layers.facilities = [];
+  if (!Array.isArray(facilities)) return;
+  facilities.forEach(f => {
+    const color = FACILITY_COLORS[f.type] || '#eaf8ff';
+    const dot = L.circleMarker([f.lat, f.lng], {
+      radius: 5, color, weight: 2, fillColor: color, fillOpacity: .7
+    }).bindTooltip(`${f.label}: ${f.name}`, { direction: 'top' }).addTo(map);
+    layers.facilities.push(dot);
   });
 }
 
