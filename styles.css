@@ -68,3 +68,9 @@
 /* People-in-warning-area estimate on a storm card (cached from the inspector). */
 .storm-pop{margin-top:6px;font-size:11px;font-weight:900;color:#ffe1bd}
 .storm-pop span{color:var(--muted);font-weight:600}
+
+
+/* Critical-facilities exposure on a storm card + inspector chips. */
+.storm-fac{margin-top:4px;font-size:11px;font-weight:900;color:#bfe6ff}
+.storm-fac span{color:var(--muted);font-weight:600}
+.fac-list .fac-chip{display:inline-block;margin:4px 5px 0 0;padding:2px 7px;border:1px solid rgba(56,224,255,.4);border-radius:10px;font-size:10.5px;font-weight:800;color:#eaf8ff;background:rgba(56,224,255,.08)}

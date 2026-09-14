@@ -14,7 +14,7 @@ export const sim = {
 // Map layer collections (populated by the map module).
 export const layers = {
   markers: [], tracks: [], cones: [], pulses: [],
-  states: null, alley: null, cloud: [], lightning: []
+  states: null, alley: null, cloud: [], lightning: [], facilities: []
 };
 
 // Late-bound singletons assigned during init (Leaflet map, Chart.js instances).

@@ -3,6 +3,8 @@
 import { showModal } from './modal.js';
 import { PROVENANCE_META, isReal } from './model.js';
 import { estimatePopulation, isPlaceholderSource } from './population.js';
+import { facilitiesInArea } from './facilities.js';
+import { showFacilities } from './map.js';
 
 // Format a people count with thousands separators.
 function fmtPeople(n) {
@@ -46,9 +48,12 @@ export function stormDetails(s) {
   const popRow = hasArea
     ? `<div class="detail-row"><span>People in warning area</span><b id="popEstimate">estimating…</b></div>`
     : '';
+  const facRow = hasArea
+    ? `<div class="detail-row"><span>Critical facilities</span><b id="facSummary">checking…</b></div>`
+    : '';
 
   showModal(`${s.id} ${dash(s.type)} Inspector`,
-    provBanner(s) + rows.map(([k, v]) => `<div class="detail-row"><span>${k}</span><b>${v}</b></div>`).join('') + popRow + note,
+    provBanner(s) + rows.map(([k, v]) => `<div class="detail-row"><span>${k}</span><b>${v}</b></div>`).join('') + popRow + facRow + note,
     300, 118);
 
   if (hasArea) {
@@ -67,6 +72,32 @@ export function stormDetails(s) {
         c.innerHTML = `⚠ People estimate is <b>approximate${isPlaceholderSource() ? ' (placeholder)' : ''}</b>${est.areaKm2 ? ` — warning area ≈ ${est.areaKm2.toLocaleString('en-US')} km²` : ''}. ${est.note || ''} Always defer to official NWS guidance.`;
         body.appendChild(c);
       }
+    });
+
+    // Critical-facilities exposure (real OpenStreetMap data) inside the polygon.
+    facilitiesInArea(s.alertGeometry).then(res => {
+      const el = document.getElementById('facSummary');
+      if (!el) return;
+      if (!res) { el.textContent = 'unavailable'; return; }
+      s._facilities = res; // cache for the list + map
+      showFacilities(res.facilities); // plot them on the map
+      const sum = res.summary;
+      if (!sum.total) { el.innerHTML = `none found <span style="color:var(--muted);font-weight:600">(OSM)</span>`; return; }
+      el.innerHTML = `${sum.total} <span style="color:var(--muted);font-weight:600">(${res.source})</span>`;
+      const body = document.getElementById('modalBody');
+      if (body && !body.querySelector('.fac-list')) {
+        const list = document.createElement('div');
+        list.className = 'note fac-list';
+        list.style.borderColor = 'rgba(56,224,255,.45)';
+        const items = sum.breakdown.map(b => `<span class="fac-chip">${b.count} × ${b.label}</span>`).join(' ');
+        list.innerHTML = `<b>Critical facilities in warning area</b><br>${items}` +
+          (res.approximate ? `<br><small>⚠ ${res.note}</small>` : '');
+        body.appendChild(list);
+      }
+    }).catch(err => {
+      const el = document.getElementById('facSummary');
+      if (el) el.textContent = 'lookup failed';
+      console.warn('Facilities lookup failed:', err && err.message);
     });
   }
 }

@@ -100,6 +100,7 @@ US-only, so storms outside US jurisdiction won't appear in `nws`/`both` modes.
 - 🪟 Modal workspaces for GIS, Simulation, Pulse Lab, Analytics, Scenarios, 3D viewer, and reports
 - 🟧 **Real NWS warning-area polygons** drawn on the map (the actual alert geometry, not a centroid dot)
 - 👥 **People-in-harm's-way estimate** per live alert — the population inside the warning polygon
+- 🏥 **Critical-facilities exposure** — hospitals/schools/fire/police/shelters/care homes inside a warning area (live OpenStreetMap data)
 
 ### People-in-harm's-way (life-safety)
 
@@ -114,6 +115,21 @@ at risk here."
 > ([WorldPop](https://www.worldpop.org/) / [NASA SEDAC GPW](https://sedac.ciesin.columbia.edu/))
 > or census-intersection source can replace it with no UI changes. Numbers are shown as
 > "≈ N (est.)" and must never be treated as authoritative counts.
+
+### Critical-facilities exposure
+
+For a live alert, WARP also finds the **real critical facilities inside the warning polygon** —
+hospitals, schools, fire stations, police, emergency shelters, and care/nursing homes — and
+shows a per-type count (e.g. "2 × Hospital · 5 × School") in the inspector, a badge on the
+storm card, and dots on the map. Facilities are sourced live from **OpenStreetMap** via the
+[Overpass API](https://overpass-api.de/) (real data, no key, works in-browser) and counted by
+true point-in-polygon, so only facilities *actually inside* the warning area are included.
+
+> ⚠️ **OpenStreetMap coverage varies by region** (good in cities, patchier rural), so this is
+> best-available open data, **not an exhaustive registry** — a facility missing here does not
+> mean it isn't there. It's built behind a pluggable interface
+> ([`js/facilities.js`](js/facilities.js), `setFacilitiesSource`) so an authoritative source
+> (e.g. US [HIFLD](https://hifld-geoplatform.hub.arcgis.com/)) can replace it later.
 
 WARP is a **situational-awareness aid, not an official warning system** — a persistent
 in-app disclaimer states this, links to the [National Weather Service](https://www.weather.gov/),
@@ -146,6 +162,8 @@ js/
     nws.js      # api.weather.gov active-alerts adapter (observed/forecast)
     nhc.js      # NHC CurrentStorms.json adapter (live cyclones; approximate tracks)
   data.js       # raw concept data (storms, pulses) + SVG icons — mock input only
+  population.js # people-in-harm's-way estimator (pluggable; placeholder default)
+  facilities.js # critical-facilities exposure (pluggable; OpenStreetMap default)
   state.js      # shared mutable runtime state (sim flags, layers, refs, appData)
   modal.js      # accessible modal dialog (focus trap, Escape, ARIA)
   details.js    # storm / EMP / state detail modals (with provenance banner)
