@@ -77,3 +77,12 @@ test('adaptAlert returns null when a storm event has no mappable geometry', () =
   zoneOnly.geometry = null;
   assert.equal(adaptAlert(zoneOnly, 0), null);
 });
+
+test('adaptAlert carries the raw warning-area geometry for polygon drawing + population', () => {
+  const e = adaptAlert(tornadoWarning, 0);
+  assert.ok(e.alertGeometry, 'entity carries alertGeometry');
+  assert.equal(e.alertGeometry.type, 'Polygon');
+  // It is the ACTUAL feature geometry, not the centroid.
+  assert.deepEqual(e.alertGeometry, tornadoWarning.geometry);
+  assert.ok(Array.isArray(e.alertGeometry.coordinates[0]) && e.alertGeometry.coordinates[0].length >= 4);
+});

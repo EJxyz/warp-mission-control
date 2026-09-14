@@ -55,3 +55,16 @@
 .source-status[data-tone="warn"]{border-color:rgba(255,158,47,.7);color:#ffe1bd}
 .source-status[data-tone="sim"]{border-color:rgba(166,108,255,.6);color:#e9dcff}
 @media(max-width:1320px){.source-status{bottom:auto;top:70px}}
+
+
+/* --- Life-safety disclaimer (persistent, dismissible) --- */
+.safety-disclaimer{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:2000;max-width:760px;width:calc(100% - 28px);display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 14px;border:1px solid rgba(255,158,47,.7);border-radius:9px;background:rgba(20,10,2,.96);color:#ffe9cf;font-size:12px;line-height:1.4;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+.safety-disclaimer a{color:#ffd64a;font-weight:800}
+.safety-disclaimer.hidden{display:none}
+.safety-dismiss{flex:0 0 auto;height:28px;padding:0 12px;border:1px solid rgba(255,214,74,.55);border-radius:5px;background:rgba(255,214,74,.14);color:#fff;font-weight:800;cursor:pointer}
+.safety-dismiss:hover{background:rgba(255,214,74,.24)}
+
+
+/* People-in-warning-area estimate on a storm card (cached from the inspector). */
+.storm-pop{margin-top:6px;font-size:11px;font-weight:900;color:#ffe1bd}
+.storm-pop span{color:var(--muted);font-weight:600}
