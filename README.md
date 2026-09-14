@@ -101,6 +101,7 @@ US-only, so storms outside US jurisdiction won't appear in `nws`/`both` modes.
 - 🟧 **Real NWS warning-area polygons** drawn on the map (the actual alert geometry, not a centroid dot)
 - 👥 **People-in-harm's-way estimate** per live alert — the population inside the warning polygon
 - 🏥 **Critical-facilities exposure** — hospitals/schools/fire/police/shelters/care homes inside a warning area (live OpenStreetMap data)
+- 🧭 **Triage view** — active alerts ranked by a transparent, explainable exposure score
 
 ### People-in-harm's-way (life-safety)
 
@@ -130,6 +131,22 @@ true point-in-polygon, so only facilities *actually inside* the warning area are
 > mean it isn't there. It's built behind a pluggable interface
 > ([`js/facilities.js`](js/facilities.js), `setFacilitiesSource`) so an authoritative source
 > (e.g. US [HIFLD](https://hifld-geoplatform.hub.arcgis.com/)) can replace it later.
+
+### Triage — ranking what to look at first
+
+The **Triage** tab ranks active alerts by combined **exposure**, so attention goes to the
+highest-impact hazard first. The score ([`js/triage.js`](js/triage.js)) is a **transparent,
+explainable** heuristic — not a black box and not an official risk index. It combines:
+
+- real NWS **severity / urgency / certainty**,
+- the **estimated** people-in-area figure (clearly flagged as an estimate), and
+- the real **critical-facility** count (hospitals & care homes weighted highest for
+  evacuation difficulty).
+
+Every row shows its **score breakdown** (hover to see each factor's points, and whether that
+factor is *real* or *estimated*), so a user can judge the ranking rather than trust a number
+blindly. The component weights are exported (`WEIGHTS`) and inspectable. A high score is a
+prompt to look closer — and a low score never means an area is safe.
 
 WARP is a **situational-awareness aid, not an official warning system** — a persistent
 in-app disclaimer states this, links to the [National Weather Service](https://www.weather.gov/),
@@ -164,6 +181,7 @@ js/
   data.js       # raw concept data (storms, pulses) + SVG icons — mock input only
   population.js # people-in-harm's-way estimator (pluggable; placeholder default)
   facilities.js # critical-facilities exposure (pluggable; OpenStreetMap default)
+  triage.js     # transparent exposure scoring + batched exposure computation
   state.js      # shared mutable runtime state (sim flags, layers, refs, appData)
   modal.js      # accessible modal dialog (focus trap, Escape, ARIA)
   details.js    # storm / EMP / state detail modals (with provenance banner)
