@@ -5,6 +5,8 @@ import { sim, refs, appData } from './state.js';
 import { showModal, closeModal, isModalOpen } from './modal.js';
 import { isReal } from './model.js';
 import { showWorkspace } from './workspaces.js';
+import { computeExposure } from './triage.js';
+import { buildReportHtml } from './report.js';
 
 let navTabs = [];
 
@@ -57,8 +59,35 @@ function initModeStrip() {
     `<div class="mini3d"><div class="vortex"></div></div><div class="detail-row"><span>Selected Object</span><b>${sim.selected}</b></div><div class="detail-row"><span>View Mode</span><b>Rotating Vortex</b></div><div class="detail-row"><span>Layer</span><b>Wind + Pulse Field</b></div><div class="note">Placeholder for future rotating hurricane/tornado inspection workspace.</div>`, 940, 210);
   document.getElementById('scenarioBtn').onclick = () => showModal('Scenario Manager',
     `<div class="detail-row"><span>Gulf Track</span><b>Active</b></div><div class="detail-row"><span>Plains Outbreak</span><b>Ready</b></div><div class="detail-row"><span>Coastal Impact</span><b>Ready</b></div><div class="detail-row"><span>Baseline</span><b>Ready</b></div><div class="note">Future build: save, load, clone, compare, and replay named scenarios.</div>`, 940, 150);
-  document.getElementById('exportBtn').onclick = () => showModal('Report Generator',
-    `<div class="detail-row"><span>Format</span><b>HTML / PDF future</b></div><div class="detail-row"><span>Includes</span><b>Map + Charts + Notes</b></div><div class="detail-row"><span>Scenario</span><b>${document.getElementById('scenarioName').textContent}</b></div><div class="note">This will produce an executive summary of the current simulation configuration and visual state.</div>`, 940, 260);
+  document.getElementById('exportBtn').onclick = generateReport;
+}
+
+// Generate a printable Situation Report: ensure exposure is computed for all
+// live alerts, then open a self-contained report document in a new window
+// (ready for the browser's Print → Save as PDF).
+async function generateReport() {
+  const realStorms = appData.storms.filter(s => isReal(s.provenance));
+  // Open the window synchronously (inside the click) so popup blockers allow it.
+  const win = window.open('', '_blank');
+  const loading = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>WARP Situation Report</title></head><body style="font:14px sans-serif;padding:32px;color:#111">Generating situation report… computing exposure for active alerts.</body></html>';
+  if (win) { win.document.open(); win.document.write(loading); win.document.close(); }
+
+  // Compute people + facilities for any alerts not already cached (throttled).
+  try { await computeExposure(realStorms); } catch (e) { /* degrade: report shows what we have */ }
+
+  const html = buildReportHtml(appData);
+  if (win) {
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+  } else {
+    // Popup blocked — fall back to an in-app modal with a download + print option.
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    showModal('Situation Report',
+      `<div class="note">Your browser blocked the report window. <a href="${url}" target="_blank" rel="noopener" style="color:var(--gold);font-weight:900">Open the report in a new tab</a>, then use your browser's Print → Save as PDF.</div>`,
+      520, 160);
+  }
 }
 
 function initScenarioButtons() {

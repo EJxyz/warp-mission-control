@@ -102,6 +102,7 @@ US-only, so storms outside US jurisdiction won't appear in `nws`/`both` modes.
 - 👥 **People-in-harm's-way estimate** per live alert — the population inside the warning polygon
 - 🏥 **Critical-facilities exposure** — hospitals/schools/fire/police/shelters/care homes inside a warning area (live OpenStreetMap data)
 - 🧭 **Triage view** — active alerts ranked by a transparent, explainable exposure score
+- 📄 **Situation Report** — one-click printable/PDF summary of active alerts, exposure, and triage ranking
 
 ### People-in-harm's-way (life-safety)
 
@@ -148,6 +149,17 @@ factor is *real* or *estimated*), so a user can judge the ranking rather than tr
 blindly. The component weights are exported (`WEIGHTS`) and inspectable. A high score is a
 prompt to look closer — and a low score never means an area is safe.
 
+### Situation Report (export)
+
+The footer **Report** button generates a **self-contained Situation Report** — it computes
+exposure for the active alerts, then opens a clean, printable document (use the browser's
+**Print → Save as PDF**) summarizing: the data source + provenance, a life-safety disclaimer,
+the triage-ranked alerts, and per-alert detail (area, headline, estimated people, critical
+facilities, exposure score). It carries the same honesty as the app — people figures are
+labeled *estimated*, real vs. simulated counts are shown, and untrusted alert text is escaped.
+Built as a pure function ([`js/report.js`](js/report.js), `buildReportHtml(appData)`) so it's
+testable and deterministic.
+
 WARP is a **situational-awareness aid, not an official warning system** — a persistent
 in-app disclaimer states this, links to the [National Weather Service](https://www.weather.gov/),
 and reminds users that the absence of an alert here does not mean an area is safe.
@@ -182,6 +194,7 @@ js/
   population.js # people-in-harm's-way estimator (pluggable; placeholder default)
   facilities.js # critical-facilities exposure (pluggable; OpenStreetMap default)
   triage.js     # transparent exposure scoring + batched exposure computation
+  report.js     # printable Situation Report builder (pure buildReportHtml)
   state.js      # shared mutable runtime state (sim flags, layers, refs, appData)
   modal.js      # accessible modal dialog (focus trap, Escape, ARIA)
   details.js    # storm / EMP / state detail modals (with provenance banner)
