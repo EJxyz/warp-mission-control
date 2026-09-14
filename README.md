@@ -198,3 +198,22 @@ js/
 - [Leaflet 1.9.4](https://leafletjs.com/) — mapping
 - [Chart.js 4.4.1](https://www.chartjs.org/) — charts
 - Vanilla HTML/CSS/JS ES modules — no build step
+
+
+## Known limitations / tech debt
+
+- **Single basemap, no fallback.** The map uses one ArcGIS `World_Imagery` tile
+  layer with no error handling or alternate source. If that tile server is briefly
+  slow or unreachable, tiles fail silently and the map can render blank until a
+  reload. Observed once as a transient one-off (not reproducible; tiles normally
+  load fine). *Deferred hardening:* add a fallback basemap (e.g. OpenStreetMap),
+  a `tileerror` handler, and an `invalidateSize()` safety call so a hiccup degrades
+  gracefully instead of blanking.
+- **Population estimate is a placeholder.** The people-in-harm's-way figure is a
+  coarse area × average-density approximation, not spatially aware. A real gridded
+  (WorldPop/GPW) or census source should replace it via `setPopulationSource()`.
+- **NHC tropical cyclones are parked.** `CurrentStorms.json` is CORS-blocked in the
+  browser; enabling live cyclones requires a proxy (`WARP.setNhcProxy(url)`).
+- **Facilities depend on OpenStreetMap coverage**, which varies by region and is not
+  exhaustive; an authoritative source (e.g. HIFLD) can replace it via `setFacilitiesSource()`.
+- **Some UI features are placeholders** (3D viewer, "AI Summary", report export).
