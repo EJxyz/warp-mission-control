@@ -9,13 +9,19 @@
 // latitudeNumeric, longitudeNumeric, movementDir (deg), movementSpeed (kt),
 // lastUpdate, and links (publicAdvisory, forecastTrack, trackCone, ...).
 //
-// TRACKS — important honesty note:
-// The official forecast track/cone are only offered as KMZ/shapefile, and NHC
-// serves those files WITHOUT CORS headers (verified: no Access-Control-Allow-Origin),
-// so a browser cannot fetch them from a static site. Rather than add a backend or
-// a third-party proxy, this adapter SYNTHESIZES an APPROXIMATE forward track from
-// the reported motion vector (movementDir + movementSpeed). It is clearly tagged
-// `trackApprox: true` and provenance FORECAST — it is NOT the official NHC cone.
+// CORS — important honesty note (verified in-browser Sep 2026):
+// nhc.noaa.gov serves CurrentStorms.json WITHOUT an Access-Control-Allow-Origin
+// header, so a browser on a static-site origin (e.g. github.io) CANNOT fetch it
+// directly — the request fails with a CORS error. (curl succeeds because it
+// ignores CORS; only browsers enforce it.) Because of this, NHC is PARKED by
+// default in the data source manager and is only used when a CORS-enabled proxy
+// URL is supplied (see load({ url })). The `url` option lets you point at such a
+// proxy that re-serves the same JSON shape.
+//
+// TRACKS: the official forecast track/cone are only offered as KMZ/shapefile,
+// also served without CORS. So even via a JSON proxy, this adapter SYNTHESIZES an
+// APPROXIMATE forward track from the reported motion vector (movementDir +
+// movementSpeed), tagged `trackApprox: true` — it is NOT the official NHC cone.
 // A real-cone source can be slotted in later behind the same entity shape.
 
 import { makeStorm, Provenance } from '../model.js';
@@ -102,13 +108,21 @@ export function adaptStorm(s) {
   });
 }
 
-/** Load active tropical cyclones from NHC. */
-export async function load({ timeoutMs = 12000 } = {}) {
+/**
+ * Load active tropical cyclones from NHC.
+ * @param {object} [opts]
+ * @param {string} [opts.url]  Override the endpoint. REQUIRED in the browser: the
+ *   default nhc.noaa.gov URL is CORS-blocked, so pass a CORS-enabled proxy that
+ *   returns the same CurrentStorms.json shape. (The default is kept for non-browser
+ *   callers / tests.)
+ * @param {number} [opts.timeoutMs=12000]
+ */
+export async function load({ url = URL, timeoutMs = 12000 } = {}) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   let res;
   try {
-    res = await fetch(URL, { headers: { 'Accept': 'application/json' }, signal: ctrl.signal });
+    res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: ctrl.signal });
   } finally {
     clearTimeout(timer);
   }

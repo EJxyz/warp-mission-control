@@ -46,53 +46,62 @@ test('mock mode returns simulated concept data (no fetch)', async () => {
   assert.ok(r.storms.every(s => s.provenance === Provenance.SIMULATED));
 });
 
-test('nws mode merges NWS + NHC live storms and carries no EMPs', async () => {
+test('nws mode uses NWS only by default and parks NHC (no proxy)', async () => {
+  let nhcHit = false;
   mockFetch({
     'api.weather.gov': () => res(nwsCollection),
-    'CurrentStorms.json': () => res(nhcPayload)
+    'CurrentStorms.json': () => { nhcHit = true; return res(nhcPayload); }
   });
-  const r = await load('nws');
+  const r = await load('nws'); // no nhcProxyUrl
+  assert.equal(nhcHit, false, 'NHC must NOT be fetched without a proxy');
   assert.equal(r.meta.mode, 'nws');
   assert.equal(r.meta.degraded, false);
-  assert.equal(r.meta.partial, false);
+  assert.equal(r.meta.partial, false, 'parked NHC is not a partial failure');
   assert.equal(r.emps.length, 0, 'nws mode omits simulated EMPs');
-  const sources = new Set(r.storms.map(s => s.source));
-  assert.ok(sources.has('NWS') && sources.has('NHC'), 'storms from both live sources');
-  assert.ok(r.storms.every(s => s.provenance !== Provenance.SIMULATED), 'all live storms are real');
+  assert.ok(r.storms.every(s => s.source === 'NWS'), 'only NWS storms');
+  assert.ok(r.meta.sources.nhc && r.meta.sources.nhc.parked, 'NHC reported as parked');
+  assert.equal(r.meta.source, 'NWS');
 });
 
-test('both mode = live real storms + simulated EMP sources', async () => {
+test('nws mode includes NHC when a proxy URL is supplied', async () => {
   mockFetch({
     'api.weather.gov': () => res(nwsCollection),
-    'CurrentStorms.json': () => res(nhcPayload)
+    'my-proxy': () => res(nhcPayload)
   });
+  const r = await load('nws', { nhcProxyUrl: 'https://my-proxy.example/CurrentStorms.json' });
+  assert.equal(r.meta.degraded, false);
+  assert.equal(r.meta.partial, false);
+  const sources = new Set(r.storms.map(s => s.source));
+  assert.ok(sources.has('NWS') && sources.has('NHC'), 'storms from both sources via proxy');
+  assert.equal(r.meta.source, 'NWS+NHC');
+  assert.ok(!r.meta.sources.nhc.parked, 'NHC not parked when proxied');
+});
+
+test('both mode = live NWS storms + simulated EMP sources (NHC parked)', async () => {
+  mockFetch({ 'api.weather.gov': () => res(nwsCollection) });
   const r = await load('both');
   assert.equal(r.meta.mode, 'both');
-  assert.ok(r.storms.length >= 3, 'NWS(1) + NHC(2) storms');
+  assert.ok(r.storms.length >= 1 && r.storms.every(s => s.source === 'NWS'));
   assert.ok(r.emps.length > 0 && r.emps.every(e => e.provenance === Provenance.SIMULATED));
 });
 
-test('partial: one live source fails, the other still provides data', async () => {
+test('partial: NHC proxy fails but NWS still provides data', async () => {
   mockFetch({
-    'api.weather.gov': () => Promise.reject(new Error('network down')),
-    'CurrentStorms.json': () => res(nhcPayload)
+    'api.weather.gov': () => res(nwsCollection),
+    'my-proxy': () => Promise.reject(new Error('proxy down'))
   });
-  const r = await load('nws');
-  assert.equal(r.meta.degraded, false, 'not degraded — we still have live data');
-  assert.equal(r.meta.partial, true, 'flagged partial');
-  assert.ok(r.storms.every(s => s.source === 'NHC'));
-  assert.ok(r.meta.sources.nws.error, 'records the NWS failure reason');
+  const r = await load('nws', { nhcProxyUrl: 'https://my-proxy.example/CurrentStorms.json' });
+  assert.equal(r.meta.degraded, false, 'not degraded — NWS still live');
+  assert.equal(r.meta.partial, true, 'flagged partial (attempted NHC failed)');
+  assert.ok(r.storms.every(s => s.source === 'NWS'));
+  assert.ok(r.meta.sources.nhc.error, 'records the NHC failure reason');
 });
 
-test('both live sources fail -> falls back to mock (degraded)', async () => {
-  mockFetch({
-    'api.weather.gov': () => res(null, false, 500),
-    'CurrentStorms.json': () => Promise.reject(new Error('dns'))
-  });
+test('NWS failure with NHC parked -> falls back to mock (degraded)', async () => {
+  mockFetch({ 'api.weather.gov': () => res(null, false, 500) });
   const r = await load('nws');
   assert.equal(r.meta.degraded, true);
   assert.ok(r.meta.error, 'carries an error reason');
-  // fallback is the simulated concept data
   assert.ok(r.storms.length > 0 && r.storms.every(s => s.provenance === Provenance.SIMULATED));
 });
 
