@@ -6,9 +6,28 @@
 
 🔗 **Live demo:** https://ejxyz.github.io/warp-mission-control/
 
-A browser-based mission-control dashboard concept for visualizing simulated
-weather anomalies (hurricanes, tornadoes) and hypothetical "pulse" energy sources across
-North America.
+## Overview
+
+WARP Mission Control is a browser-based situational-awareness dashboard that visualizes
+weather anomalies and hypothetical electromagnetic-pulse (EMP) events across North America
+on a single interactive map. It brings two very different kinds of information into one view
+— **real, observed weather hazards** and **modeled "what-if" pulse scenarios** — so a user
+can begin to reason about risk and resilience for critical infrastructure. It presents like
+an operational mission-control console, but it is a concept/research build, not an
+authoritative forecasting product.
+
+Its central design principle is a **strict, enforced separation between real and simulated
+data**: every object carries a provenance tag (`observed` / `forecast` / `simulated`) that
+is validated in the data model and surfaced throughout the UI. This is the foundation for the
+longer-term goal — a platform for **infrastructure hazard and resilience assessment**, where
+real feeds and modeled effects can be examined side by side without ever being confused.
+
+It's built dependency-free with vanilla HTML/CSS/JS ES modules (no framework, no build step),
+[Leaflet](https://leafletjs.com/) for mapping and [Chart.js](https://www.chartjs.org/) for
+analytics, on top of a source-abstraction data layer that ingests live
+[NWS/NOAA](https://www.weather.gov/documentation/services-web-api) alerts.
+
+📖 See **[ABOUT.md](ABOUT.md)** for the full description (what it is, why it was built, and how).
 
 > ⚠️ **Real vs. simulated data are kept strictly separate.** Storms can come from the
 > live [NWS/NOAA API](https://www.weather.gov/documentation/services-web-api) (real,
