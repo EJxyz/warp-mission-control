@@ -4,7 +4,9 @@
 import { sim, refs, appData } from './state.js';
 import { AXIS } from './charts.js';
 import { timeText } from './timeline.js';
-import { PROVENANCE_META } from './model.js';
+import { PROVENANCE_META, isReal } from './model.js';
+import { rankAlerts, computeExposure, MAX_SCORE } from './triage.js';
+import { renderStormList } from './panels.js';
 
 const dash = v => (v === undefined || v === null || v === '') ? '—' : v;
 
@@ -20,6 +22,7 @@ export function showWorkspace(name) {
   const b = document.getElementById('wsBody');
   document.getElementById('wsTitle').textContent = name + ' Workspace';
   const subtitles = {
+    'Triage': 'Active alerts ranked by exposure — a transparent prioritization aid, not an official risk index.',
     'GIS': 'Geospatial reference — objects, coordinates and coverage of the North American domain.',
     'Simulation': 'Scenario playback state, per-object motion and intensity trends.',
     'Pulse Lab': 'EMP-source inventory, impact ranking and placement (simulated).',
@@ -29,7 +32,68 @@ export function showWorkspace(name) {
   document.getElementById('wsSubtitle').textContent = subtitles[name] || '';
   b.innerHTML = '';
   ws.classList.add('show');
-  ({ 'GIS': renderGIS, 'Simulation': renderSimulation, 'Pulse Lab': renderPulseLab, 'Analytics': renderAnalytics, 'Scenarios': renderScenarios }[name] || (() => { }))(b);
+  ({ 'Triage': renderTriage, 'GIS': renderGIS, 'Simulation': renderSimulation, 'Pulse Lab': renderPulseLab, 'Analytics': renderAnalytics, 'Scenarios': renderScenarios }[name] || (() => { }))(b);
+}
+
+// Focus a ranked storm on the map + list (used by triage row clicks).
+function focusStorm(entity) {
+  sim.selected = entity.id;
+  showWorkspace(null);
+  document.querySelector('.nav .tab').click(); // back to Mission Control
+  renderStormList();
+  refs.map.setView([entity.lat, entity.lng], 6);
+}
+
+// Build the ranked triage table body from current entities.
+function triageRows(tbody) {
+  const ranked = rankAlerts(appData.storms.filter(s => isReal(s.provenance)));
+  tbody.innerHTML = '';
+  if (!ranked.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted)">No live alerts to rank. (Switch to live data with a data source that has active alerts.)</td></tr>`;
+    return;
+  }
+  ranked.forEach((r, i) => {
+    const e = r.entity;
+    const people = e._popEstimate && e._popEstimate.people != null ? `≈ ${e._popEstimate.people.toLocaleString('en-US')}` : '…';
+    const fac = e._facilities && e._facilities.summary ? e._facilities.summary.total : '…';
+    const tip = r.factors.map(f => `${f.label}: ${f.points}/${f.max}${f.real ? '' : ' (est.)'}`).join('\n');
+    const tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.title = 'Score breakdown —\n' + tip;
+    tr.innerHTML = `<td><b>${i + 1}</b></td><td><b>${e.id}</b><br><small style="color:var(--muted)">${dash(e.event || e.type)}</small></td>` +
+      `<td>${dash(e.severity)}</td><td>${people}</td><td>${fac}</td>` +
+      `<td><b style="color:${e.color || '#eaf8ff'}">${r.score}</b> <small style="color:var(--muted)">/ ${MAX_SCORE}</small></td>`;
+    tr.onclick = () => focusStorm(e);
+    tbody.appendChild(tr);
+  });
+}
+
+function renderTriage(b) {
+  const realStorms = appData.storms.filter(s => isReal(s.provenance));
+  b.appendChild(el(`<div class="ws-card" style="border-color:rgba(255,158,47,.55)"><h4 style="border:0;margin:0">⚠ Transparent prioritization aid — not an official risk index</h4><p style="color:var(--muted);font-size:12px;margin:8px 0 0">Ranks alerts by a documented, inspectable score (hover a row for the breakdown). Combines real NWS severity/urgency/certainty and real facility counts with an <b>estimated</b> people-in-area figure. Absence of a high score never means an area is safe.</p></div>`));
+
+  if (!realStorms.length) {
+    b.appendChild(el(`<div class="ws-card"><p style="color:var(--muted);margin:0">No live (observed/forecast) alerts to rank. Load live data (e.g. <code>WARP.setMode('nws')</code>) with active alerts.</p></div>`));
+    return;
+  }
+
+  const card = el(`<div class="ws-card"><h4>Ranked alerts <span id="triageProgress" style="color:var(--muted);font-weight:600;text-transform:none"></span></h4></div>`);
+  const table = el(`<table class="ws-table"><thead><tr><th>#</th><th>Alert</th><th>Severity</th><th>People (est.)</th><th>Facilities</th><th>Score</th></tr></thead><tbody></tbody></table>`);
+  card.appendChild(table);
+  b.appendChild(card);
+  const tbody = table.querySelector('tbody');
+  triageRows(tbody); // initial (may show … until exposure computes)
+
+  // Compute exposure for all alerts in the background, then re-rank.
+  const prog = () => document.getElementById('triageProgress');
+  computeExposure(realStorms, {
+    onProgress: (done, total) => { const p = prog(); if (p) p.textContent = `· computing exposure ${done}/${total}…`; }
+  }).then(() => {
+    const p = prog(); if (p) p.textContent = '';
+    // Only re-render if the triage view is still open.
+    if (document.getElementById('workspace').classList.contains('show') && tbody.isConnected) triageRows(tbody);
+    renderStormList(); // surface cached people/facilities on cards too
+  }).catch(() => { const p = prog(); if (p) p.textContent = '· exposure unavailable'; });
 }
 
 function renderGIS(b) {
