@@ -48,11 +48,60 @@ export function polygonAreaKm2(geometry) {
 }
 
 // Extract polygon rings (arrays of [lng,lat]) from Polygon / MultiPolygon.
-function ringsOf(geometry) {
+export function ringsOf(geometry) {
   if (!geometry) return [];
   if (geometry.type === 'Polygon') return geometry.coordinates || [];
   if (geometry.type === 'MultiPolygon') return (geometry.coordinates || []).flat();
   return [];
+}
+
+// Bounding box [south, west, north, east] (lat/lng) for a geometry.
+export function bboxOf(geometry) {
+  const rings = ringsOf(geometry);
+  let s = Infinity, w = Infinity, n = -Infinity, e = -Infinity;
+  for (const ring of rings) {
+    for (const c of ring) {
+      if (!Array.isArray(c)) continue;
+      const [lng, lat] = c;
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+      if (lat < s) s = lat; if (lat > n) n = lat;
+      if (lng < w) w = lng; if (lng > e) e = lng;
+    }
+  }
+  return Number.isFinite(s) ? [s, w, n, e] : null;
+}
+
+// Ray-casting point-in-polygon. [lng,lat] against Polygon/MultiPolygon outer rings.
+export function pointInGeometry(lng, lat, geometry) {
+  if (!Number.isFinite(lng) || !Number.isFinite(lat) || !geometry) return false;
+  const test = (ring) => {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+      if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / ((yj - yi) || 1e-12) + xi)) inside = !inside;
+    }
+    return inside;
+  };
+  if (geometry.type === 'Polygon') return test(geometry.coordinates[0] || []);
+  if (geometry.type === 'MultiPolygon') return (geometry.coordinates || []).some(p => test(p[0] || []));
+  return false;
+}
+
+// Generate a grid of sample points inside a geometry (used for spatial sampling).
+// Returns array of [lng, lat] that fall inside the polygon. `steps` per axis.
+export function samplePointsInside(geometry, steps = 12) {
+  const bbox = bboxOf(geometry);
+  if (!bbox) return [];
+  const [s, w, n, e] = bbox;
+  const pts = [];
+  const dLat = (n - s) / (steps + 1), dLng = (e - w) / (steps + 1);
+  for (let i = 1; i <= steps; i++) {
+    for (let j = 1; j <= steps; j++) {
+      const lat = s + dLat * i, lng = w + dLng * j;
+      if (pointInGeometry(lng, lat, geometry)) pts.push([lng, lat]);
+    }
+  }
+  return pts;
 }
 
 // Representative latitude of a geometry (mean of first ring) — used to pick a

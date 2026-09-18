@@ -110,13 +110,29 @@ For each live NWS alert, WARP draws the **real warning-area polygon** and estima
 **number of people inside it** — the signal that turns "a warning polygon" into "≈ N people
 at risk here."
 
-> ⚠️ **The estimate is approximate and clearly labeled as such.** The current estimator
-> ([`js/population.js`](js/population.js)) is a documented **placeholder** — polygon area ×
-> average US population density — so it is *order-of-magnitude only* and is not spatially
-> aware. It is built behind a pluggable interface (`setPopulationSource`) so a real gridded
-> ([WorldPop](https://www.worldpop.org/) / [NASA SEDAC GPW](https://sedac.ciesin.columbia.edu/))
-> or census-intersection source can replace it with no UI changes. Numbers are shown as
-> "≈ N (est.)" and must never be treated as authoritative counts.
+Two population sources exist behind a pluggable interface (`setPopulationSource`); numbers
+are always shown as "≈ N (est.)" and must never be treated as authoritative counts:
+
+- **Placeholder (default)** — [`js/population.js`](js/population.js): polygon area × average
+  US density. Order-of-magnitude only, *not* spatially aware. Fine for a demo, honest but crude.
+- **US Census (real data, opt-in)** — [`js/sources/census.js`](js/sources/census.js): samples
+  points inside the warning polygon, reverse-geocodes each to its **county** (Census Geocoder),
+  pulls real **county populations** (Census ACS), and apportions them by the polygon's area
+  share of each county. Browser-only (both Census APIs are CORS-enabled — **no backend**), US-only.
+
+Enable the real Census source at runtime from the console:
+
+```js
+WARP.useCensusPopulation();       // switch to real US Census county estimate
+WARP.useCensusPopulation(false);  // revert to the placeholder
+```
+
+> ⚠️ **Still an estimate, even with Census data.** County population is treated as uniform
+> within each county, so a polygon clipping a dense city corner of a mostly-rural county is
+> over/under-counted, and accuracy depends on sampling resolution. It is grounded in real
+> county counts (a big step up from area×density) but is **not** a per-person census of the
+> polygon. A finer gridded source ([WorldPop](https://www.worldpop.org/) /
+> [NASA SEDAC GPW](https://sedac.ciesin.columbia.edu/)) could slot in behind the same interface.
 
 ### Critical-facilities exposure
 
@@ -190,6 +206,7 @@ js/
     mock.js     # built-in concept data, normalized as simulated entities
     nws.js      # api.weather.gov active-alerts adapter (observed/forecast)
     nhc.js      # NHC CurrentStorms.json adapter (live cyclones; approximate tracks)
+    census.js   # real US Census county population source (opt-in; area-weighted)
   data.js       # raw concept data (storms, pulses) + SVG icons — mock input only
   population.js # people-in-harm's-way estimator (pluggable; placeholder default)
   facilities.js # critical-facilities exposure (pluggable; OpenStreetMap default)
@@ -222,9 +239,11 @@ js/
   load fine). *Deferred hardening:* add a fallback basemap (e.g. OpenStreetMap),
   a `tileerror` handler, and an `invalidateSize()` safety call so a hiccup degrades
   gracefully instead of blanking.
-- **Population estimate is a placeholder.** The people-in-harm's-way figure is a
-  coarse area × average-density approximation, not spatially aware. A real gridded
-  (WorldPop/GPW) or census source should replace it via `setPopulationSource()`.
+- **Population estimate.** Defaults to a coarse area × average-density placeholder.
+  A real **US Census** county-area-weighted source is available opt-in
+  (`WARP.useCensusPopulation()`), but it treats county population as uniform, so it's
+  still an estimate (not a per-person count). A finer gridded source (WorldPop/GPW)
+  could replace it via `setPopulationSource()`.
 - **NHC tropical cyclones are parked.** `CurrentStorms.json` is CORS-blocked in the
   browser; enabling live cyclones requires a proxy (`WARP.setNhcProxy(url)`).
 - **Facilities depend on OpenStreetMap coverage**, which varies by region and is not
