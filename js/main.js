@@ -8,6 +8,8 @@ import { initCharts, rebuildCharts } from './charts.js';
 import { renderStormList, updateSummary, renderPulses, renderThumbs } from './panels.js';
 import { initTimeline } from './timeline.js';
 import { initNav } from './nav.js';
+import { setPopulationSource } from './population.js';
+import { makeCensusSource } from './sources/census.js';
 
 // Ensure the on-screen source-status notice element exists (created once).
 function statusEl() {
@@ -123,11 +125,26 @@ async function reload() {
   renderPulses();
   return result.meta;
 }
+// Clear cached exposure so a new population/facilities source recomputes.
+function clearExposureCache() {
+  for (const s of appData.storms) { delete s._popEstimate; delete s._facilities; }
+}
+
 window.WARP = {
   async setMode(mode) { config.mode = mode; return reload(); },
   // Enable NHC tropical cyclones by pointing at a CORS-enabled proxy (see README).
   // Pass null to disable again. Re-loads the current mode.
   async setNhcProxy(url) { config.nhcProxyUrl = url || null; return reload(); },
+  // Switch the population estimator to the real US Census-backed source (browser,
+  // no backend). Pass false to revert to the placeholder. Clears cached estimates
+  // so open/next inspectors + triage recompute with the new source.
+  useCensusPopulation(on = true) {
+    setPopulationSource(on ? makeCensusSource() : null);
+    clearExposureCache();
+    renderStormList();
+    return on ? 'Census population source enabled (US only; county area-weighted estimate).'
+              : 'Reverted to placeholder population estimator.';
+  },
   get data() { return appData; },
   get config() { return config; }
 };
