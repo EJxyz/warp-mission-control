@@ -51,21 +51,26 @@ Live "real weather" currently comes from **NWS active alerts**
 tornado/severe-thunderstorm/hurricane/etc. alerts, US-only. Warnings are tagged
 `observed`, watches `forecast`. *(Verified working live against the real API.)*
 
-### NHC tropical cyclones — parked (requires a proxy)
+### NHC tropical cyclones — live via a proxy (opt-in)
 
 The app includes an NHC adapter ([`sources/nhc.js`](js/sources/nhc.js)) that maps
 [CurrentStorms.json](https://www.nhc.noaa.gov/CurrentStorms.json) into live cyclone
-entities, **but it is disabled by default.** Verified in-browser: `nhc.noaa.gov`
-serves `CurrentStorms.json` **without an `Access-Control-Allow-Origin` header**, so a
-browser on a static-site origin (like GitHub Pages) **cannot fetch it** — the request
-fails with a CORS error. (`curl` works because it ignores CORS; only browsers enforce it.)
+entities. It's **off by default** because `nhc.noaa.gov` serves that file **without an
+`Access-Control-Allow-Origin` header**, so a browser on a static-site origin (like GitHub
+Pages) can't fetch it directly — the request fails with a CORS error. (`curl` works because
+it ignores CORS; only browsers enforce it.)
 
-To enable NHC you must supply a **CORS-enabled proxy** that re-serves the same JSON:
+A ready-to-deploy **Cloudflare Worker** proxy is included in [`proxy/`](proxy/) — it fetches
+the NHC JSON server-side and re-serves it with CORS headers. Deploy it (see
+[`proxy/README.md`](proxy/README.md)), then point the app at it:
 
 ```js
-// point at your proxy (e.g. a Cloudflare Worker), then it loads with the current mode
-WARP.setNhcProxy('https://your-proxy.example/CurrentStorms.json');
+WARP.setNhcProxy('https://warp-nhc-proxy.<your-subdomain>.workers.dev/');
+WARP.setMode('nws');   // or 'both' — live cyclones now load alongside NWS alerts
+WARP.setNhcProxy(null); // disable again
 ```
+
+The proxy URL is remembered across reloads (localStorage).
 
 > **Approximate tracks:** even via a proxy, NHC's official forecast cone/track are only
 > published as KMZ/shapefile (also without CORS). So each cyclone's forward track is
@@ -244,8 +249,10 @@ js/
   (`WARP.useCensusPopulation()`), but it treats county population as uniform, so it's
   still an estimate (not a per-person count). A finer gridded source (WorldPop/GPW)
   could replace it via `setPopulationSource()`.
-- **NHC tropical cyclones are parked.** `CurrentStorms.json` is CORS-blocked in the
-  browser; enabling live cyclones requires a proxy (`WARP.setNhcProxy(url)`).
+- **NHC tropical cyclones need a proxy (provided).** `CurrentStorms.json` is CORS-blocked
+  in the browser; a deployable Cloudflare Worker proxy is included in [`proxy/`](proxy/).
+  Deploy it and enable via `WARP.setNhcProxy(url)`. Forecast tracks remain approximate
+  (motion-derived), since NHC's official cone is KMZ-only (also non-CORS).
 - **Facilities depend on OpenStreetMap coverage**, which varies by region and is not
   exhaustive; an authoritative source (e.g. HIFLD) can replace it via `setFacilitiesSource()`.
 - **Some UI features are placeholders** (3D viewer, "AI Summary", report export).

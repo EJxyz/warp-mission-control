@@ -1,0 +1,10 @@
+# Cloudflare Worker config for the NHC CurrentStorms.json CORS proxy.
+# Deploy with:  wrangler deploy   (from inside the proxy/ directory)
+# Docs: proxy/README.md
+
+name = "warp-nhc-proxy"
+main = "nhc-worker.js"
+compatibility_date = "2024-11-01"
+
+# No KV, secrets, routes, or bindings required — this Worker only fetches one
+# public upstream and re-serves it with CORS headers.
