@@ -62,6 +62,12 @@ function setSourceNotice(meta) {
 }
 
 async function boot() {
+  // 0. Restore a previously-set NHC proxy URL so live cyclones persist across reloads.
+  try {
+    const saved = localStorage.getItem('warpNhcProxy');
+    if (saved) config.nhcProxyUrl = saved;
+  } catch (e) { /* localStorage unavailable — ignore */ }
+
   // 1. Load normalized entities from the configured source (never throws).
   const result = await load(config.mode, { nhcProxyUrl: config.nhcProxyUrl });
   appData.storms = result.storms;
@@ -132,9 +138,16 @@ function clearExposureCache() {
 
 window.WARP = {
   async setMode(mode) { config.mode = mode; return reload(); },
-  // Enable NHC tropical cyclones by pointing at a CORS-enabled proxy (see README).
-  // Pass null to disable again. Re-loads the current mode.
-  async setNhcProxy(url) { config.nhcProxyUrl = url || null; return reload(); },
+  // Enable NHC tropical cyclones by pointing at a CORS-enabled proxy (see proxy/).
+  // The URL is remembered across reloads (localStorage). Pass null to disable.
+  async setNhcProxy(url) {
+    config.nhcProxyUrl = url || null;
+    try {
+      if (config.nhcProxyUrl) localStorage.setItem('warpNhcProxy', config.nhcProxyUrl);
+      else localStorage.removeItem('warpNhcProxy');
+    } catch (e) { /* localStorage unavailable — session-only */ }
+    return reload();
+  },
   // Switch the population estimator to the real US Census-backed source (browser,
   // no backend). Pass false to revert to the placeholder. Clears cached estimates
   // so open/next inspectors + triage recompute with the new source.
