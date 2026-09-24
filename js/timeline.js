@@ -4,6 +4,7 @@
 import { sim, refs, appData } from './state.js';
 import { renderStormList, updateSummary } from './panels.js';
 import { isReal } from './model.js';
+import { stepStorm, stepEmp } from './fluctuate.js';
 
 export function timeText(s) {
   const m = Math.floor(s / 60), sec = Math.floor(s % 60);
@@ -21,11 +22,21 @@ function animate() {
     sim.missionTime = (sim.missionTime + .18 * sim.speed) % 360;
     const storms = appData.storms;
     // Only evolve SIMULATED storms — we never mutate real observed/forecast data.
+    // stepStorm/stepEmp guard isReal() internally as a second line of defense.
     storms.forEach((s, i) => {
       if (isReal(s.provenance)) return;
       if (s.pulse !== undefined) s.pulse = Math.min(99, s.pulse + .006 * sim.speed);
       if (s.intensity !== undefined) s.intensity = Math.max(.08, s.intensity - .000035 * sim.speed * (i + 1));
+      stepStorm(s, sim.speed); // fluctuate wind + class (simulated only)
     });
+    // Fluctuate simulated EMP impacts, then refresh the Pulse Impact chart.
+    appData.emps.forEach(p => stepEmp(p, sim.speed));
+    const pulseChart = refs.pulseChart;
+    if (pulseChart) {
+      pulseChart.data.labels = appData.emps.map(p => p.id);
+      pulseChart.data.datasets[0].data = appData.emps.map(p => p.impact);
+      pulseChart.update('none');
+    }
     // Advance the intensity chart, matching each dataset to its storm by id/label.
     const chart = refs.intensityChart;
     if (chart) {
