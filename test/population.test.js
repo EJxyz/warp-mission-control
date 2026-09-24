@@ -3,7 +3,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  polygonAreaKm2, estimatePopulation, setPopulationSource, isPlaceholderSource
+  polygonAreaKm2, estimatePopulation, setPopulationSource, isPlaceholderSource,
+  circleToPolygon, pointInGeometry
 } from '../js/population.js';
 
 // A ~1° x 1° box near 40°N. At that latitude 1° lng ≈ 85 km, 1° lat ≈ 111 km,
@@ -58,4 +59,32 @@ test('a throwing source is caught and reported, never crashes', async () => {
   assert.equal(est.people, null);
   assert.equal(est.method, 'error');
   setPopulationSource(null);
+});
+
+
+test('circleToPolygon returns a closed GeoJSON ring around the center', () => {
+  const poly = circleToPolygon(40, -100, 100, 48);
+  assert.equal(poly.type, 'Polygon');
+  const ring = poly.coordinates[0];
+  assert.ok(ring.length >= 49, 'segments + closing vertex');
+  // Ring is closed (first === last).
+  assert.deepEqual(ring[0], ring[ring.length - 1]);
+  // Center is inside the circle polygon; a far point is not.
+  assert.equal(pointInGeometry(-100, 40, poly), true);
+  assert.equal(pointInGeometry(-100, 45, poly), false);
+});
+
+test('circleToPolygon area is roughly pi*r^2 for the given radius', () => {
+  const r = 100; // km
+  const poly = circleToPolygon(40, -100, r);
+  const area = polygonAreaKm2(poly);
+  const expected = Math.PI * r * r; // ~31,416 km²
+  // Within ~15% (polygon approximation + planar area estimate).
+  assert.ok(Math.abs(area - expected) / expected < 0.15, `area ${Math.round(area)} vs ~${Math.round(expected)}`);
+});
+
+test('circleToPolygon rejects invalid input', () => {
+  assert.equal(circleToPolygon(NaN, -100, 100), null);
+  assert.equal(circleToPolygon(40, -100, 0), null);
+  assert.equal(circleToPolygon(40, -100, -5), null);
 });

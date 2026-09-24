@@ -101,7 +101,7 @@ export function drawObjects() {
   });
   // EMP sources are always simulated and always editable.
   appData.emps.forEach(p => {
-    p._circle = L.circle([p.lat, p.lng], { radius: 180000, color: '#ffd64a', weight: 2, fillColor: '#ffd64a', fillOpacity: .11 }).addTo(map);
+    p._circle = L.circle([p.lat, p.lng], { radius: (p.radiusKm || 150) * 1000, color: '#ffd64a', weight: 2, fillColor: '#ffd64a', fillOpacity: .11 }).addTo(map);
     layers.pulses.push(p._circle);
     const pm = L.marker([p.lat, p.lng], { icon: makePulseIcon(p), draggable: true })
       .on('click', () => pulseDetails(p))

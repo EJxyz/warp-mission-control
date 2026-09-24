@@ -2,7 +2,7 @@
 
 import { showModal } from './modal.js';
 import { PROVENANCE_META, isReal } from './model.js';
-import { estimatePopulation, isPlaceholderSource } from './population.js';
+import { estimatePopulation, isPlaceholderSource, circleToPolygon } from './population.js';
 import { facilitiesInArea } from './facilities.js';
 import { showFacilities } from './map.js';
 
@@ -103,14 +103,51 @@ export function stormDetails(s) {
 }
 
 export function pulseDetails(p) {
+  const radiusKm = p.radiusKm || 150;
   showModal(`${p.id} EMP Source`,
     provBanner(p) +
     `<div class="detail-row"><span>Impact</span><b>${dash(p.impact, '%')}</b></div>` +
     `<div class="detail-row"><span>Power</span><b>${dash(p.power)}</b></div>` +
+    `<div class="detail-row"><span>Affected radius</span><b>${radiusKm} km</b></div>` +
     `<div class="detail-row"><span>Latitude</span><b>${p.lat.toFixed(2)}</b></div>` +
     `<div class="detail-row"><span>Longitude</span><b>${p.lng.toFixed(2)}</b></div>` +
-    `<div class="note">Simulation-only object (electromagnetic-pulse source): configurable radius, visualization style, and scenario assignment. This is not real weather data.</div>`,
+    `<div class="detail-row"><span>People in range</span><b id="empPop">estimating…</b></div>` +
+    `<div class="detail-row"><span>Critical facilities</span><b id="empFac">checking…</b></div>` +
+    `<div class="note" style="border-color:rgba(166,108,255,.55)">⚠ <b>Simulated what-if.</b> The EMP itself is hypothetical (not a real event). The exposure figures below are computed over <b>real</b> population/facility data for the affected radius — i.e. "if a pulse of this radius occurred here, this is who/what falls within range." People counts are estimates.</div>`,
     900, 130);
+
+  // Run the SAME exposure engine used for weather alerts, over the EMP's radius
+  // as a polygon. Real data (Census/OSM) under a simulated hazard footprint.
+  const area = circleToPolygon(p.lat, p.lng, radiusKm);
+  if (!area) return;
+
+  estimatePopulation(area).then(est => {
+    const el = document.getElementById('empPop');
+    if (!el) return;
+    if (!est || est.people == null) { el.textContent = 'unavailable'; return; }
+    p._popEstimate = est;
+    el.innerHTML = `≈ ${fmtPeople(est.people)} <span style="color:var(--muted);font-weight:600">(est.)</span>`;
+  }).catch(() => { const el = document.getElementById('empPop'); if (el) el.textContent = 'unavailable'; });
+
+  facilitiesInArea(area).then(res => {
+    const el = document.getElementById('empFac');
+    if (!el) return;
+    if (!res) { el.textContent = 'unavailable'; return; }
+    p._facilities = res;
+    const sum = res.summary;
+    if (!sum.total) { el.innerHTML = `none found <span style="color:var(--muted);font-weight:600">(OSM)</span>`; return; }
+    el.innerHTML = `${sum.total} <span style="color:var(--muted);font-weight:600">(${res.source})</span>`;
+    const body = document.getElementById('modalBody');
+    if (body && !body.querySelector('.fac-list')) {
+      const list = document.createElement('div');
+      list.className = 'note fac-list';
+      list.style.borderColor = 'rgba(56,224,255,.45)';
+      list.innerHTML = `<b>Critical facilities in range</b><br>` +
+        sum.breakdown.map(b => `<span class="fac-chip">${b.count} × ${b.label}</span>`).join(' ') +
+        (res.approximate ? `<br><small>⚠ ${res.note}</small>` : '');
+      body.appendChild(list);
+    }
+  }).catch(() => { const el = document.getElementById('empFac'); if (el) el.textContent = 'lookup failed'; });
 }
 
 export function showState(name) {

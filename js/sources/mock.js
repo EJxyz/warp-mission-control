@@ -22,6 +22,10 @@ function adaptStorm(s) {
   });
 }
 
+// Default affected radius (km) by EMP power level. Illustrative for the
+// simulated scenario layer — not a physical model.
+const EMP_RADIUS_KM = { High: 250, Medium: 150, Low: 80 };
+
 // Adapt one raw "pulse" into a normalized EMP source entity.
 function adaptEmp(p) {
   return makeEmp({
@@ -29,7 +33,8 @@ function adaptEmp(p) {
     lat: p.lat,
     lng: p.lng,
     source: 'mock',
-    impact: p.impact, power: p.power
+    impact: p.impact, power: p.power,
+    radiusKm: p.radiusKm || EMP_RADIUS_KM[p.power] || 150
   });
 }
 

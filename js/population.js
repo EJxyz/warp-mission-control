@@ -87,6 +87,25 @@ export function pointInGeometry(lng, lat, geometry) {
   return false;
 }
 
+// Approximate a circle (center + radius in km) as a GeoJSON Polygon so it can be
+// fed to the same exposure engine (estimatePopulation / facilitiesInArea) that
+// weather-alert polygons use. `segments` controls smoothness.
+export function circleToPolygon(lat, lng, radiusKm, segments = 48) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || !Number.isFinite(radiusKm) || radiusKm <= 0) return null;
+  const dLat = radiusKm / 111.32; // 1° lat ≈ 111.32 km
+  const cosLat = Math.cos(lat * Math.PI / 180) || 1e-6;
+  const dLng = radiusKm / (111.32 * cosLat);
+  const ring = [];
+  for (let i = 0; i <= segments; i++) {
+    const t = (i / segments) * 2 * Math.PI;
+    ring.push([
+      +(lng + dLng * Math.cos(t)).toFixed(5),
+      +(lat + dLat * Math.sin(t)).toFixed(5)
+    ]);
+  }
+  return { type: 'Polygon', coordinates: [ring] };
+}
+
 // Generate a grid of sample points inside a geometry (used for spatial sampling).
 // Returns array of [lng, lat] that fall inside the polygon. `steps` per axis.
 export function samplePointsInside(geometry, steps = 12) {
