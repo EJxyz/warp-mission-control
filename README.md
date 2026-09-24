@@ -108,6 +108,7 @@ US-only, so storms outside US jurisdiction won't appear in `nws`/`both` modes.
 - 🏥 **Critical-facilities exposure** — hospitals/schools/fire/police/shelters/care homes inside a warning area (live OpenStreetMap data)
 - 🧭 **Triage view** — active alerts ranked by a transparent, explainable exposure score
 - 📄 **Situation Report** — one-click printable/PDF summary of active alerts, exposure, and triage ranking
+- ⚡ **EMP scenario exposure** — a simulated pulse's affected radius run through the *same* real exposure engine (people + facilities in range), as a clearly-labeled what-if
 
 ### People-in-harm's-way (life-safety)
 
@@ -180,6 +181,17 @@ facilities, exposure score). It carries the same honesty as the app — people f
 labeled *estimated*, real vs. simulated counts are shown, and untrusted alert text is escaped.
 Built as a pure function ([`js/report.js`](js/report.js), `buildReportHtml(appData)`) so it's
 testable and deterministic.
+
+### EMP scenario exposure (simulated what-if over real data)
+
+EMP (electromagnetic-pulse) sources are **always simulated** — a hypothetical scenario
+layer, never a real event. But their *exposure footprint* is run through the **same engine**
+used for weather alerts: an EMP's affected radius is turned into a polygon
+([`circleToPolygon`](js/population.js)) and passed to the real population and facilities
+estimators. So opening an EMP shows **"if a pulse of this radius occurred here, ≈ N people
+(est.) and these critical facilities fall within range"** — real exposure data under a clearly
+labeled hypothetical hazard. The pulse stays tagged `simulated` throughout; only the
+exposure lookup uses real Census/OpenStreetMap data.
 
 WARP is a **situational-awareness aid, not an official warning system** — a persistent
 in-app disclaimer states this, links to the [National Weather Service](https://www.weather.gov/),
